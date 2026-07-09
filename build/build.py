@@ -215,20 +215,19 @@ def download_from_source(source):
         else f'https://github.com/{owner}/{repo}/archive/{ref}.zip'
 
 
-def write_ready_zip(data, out_dir):
-    """Zip only the ready (owner-signed) skills for the header download button."""
-    import zipfile, io
+def write_zip(data, out_dir, fname, note, only_complete):
+    import zipfile
     ready = [(c, t) for c in data['categories'] for t in c['tasks']
-             if t['status'] == 'complete' and (t.get('content') or '').strip()]
-    path = os.path.join(out_dir, 'TaskLibrary-Skills-ready.zip')
+             if (t.get('content') or '').strip() and (t['status'] == 'complete' or not only_complete)]
+    path = os.path.join(out_dir, fname)
     with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
-        manifest = {'total': len(ready), 'note': 'Ready skills only — owner-signed. Rebuilt on every library build.', 'tasks': []}
+        manifest = {'total': len(ready), 'note': note, 'tasks': []}
         for c, t in ready:
             cf = folder_of(c['name'])
-            z.writestr(f'TaskLibrary-Skills-Ready/skills/{cf}/{t["slug"]}.md', t['content'])
-            manifest['tasks'].append({'slug': t['slug'], 'category': c['name'],
+            z.writestr(f'TaskLibrary-Skills/skills/{cf}/{t["slug"]}.md', t['content'])
+            manifest['tasks'].append({'slug': t['slug'], 'category': c['name'], 'status': t['status'],
                                       'owner': t.get('owner', ''), 'path': f'skills/{cf}/{t["slug"]}.md'})
-        z.writestr('TaskLibrary-Skills-Ready/manifest.json', json.dumps(manifest, ensure_ascii=False, indent=1))
+        z.writestr('TaskLibrary-Skills/manifest.json', json.dumps(manifest, ensure_ascii=False, indent=1))
     return len(ready)
 
 
@@ -292,7 +291,7 @@ def main():
             continue
         entry = {'source': src, 'format': 'claude-skill', 'category': cat,
                  'stage': (row.get('Stage') or '—').strip() or '—',
-                 'status': {'ready': 'complete', 'wip': 'needs-work', 'gap': 'gap'}.get(
+                 'status': {'ready': 'complete', 'complete': 'complete', 'wip': 'needs-work', 'needs-work': 'needs-work', 'gap': 'gap'}.get(
                      (row.get('Status') or '').strip().lower(), 'needs-work'),
                  'flag': 'added via Asset Tracker sheet'}
         dl = (row.get('Download URL') or '').strip() or download_from_source(src)
@@ -311,8 +310,9 @@ def main():
         ov = overrides.get(slug)
         if ov:
             s = (ov.get('Status') or '').strip().lower()
-            status = {'ready': 'complete', 'wip': 'needs-work', 'gap': 'gap'}.get(s, status)
-            art = (ov.get('Definitive Article URL') or '').strip() or None  # sheet cell is authoritative
+            status = {'ready': 'complete', 'complete': 'complete', 'wip': 'needs-work', 'needs-work': 'needs-work', 'gap': 'gap'}.get(s, status)
+            if (ov.get('Definitive Article URL') or '').strip():
+                art = ov['Definitive Article URL'].strip()   # sheet overrides only when filled; file frontmatter is the default
         task = {'title': fm['name'], 'slug': slug, 'status': status,
                 'stage': fm['stage'] or '—', 'article': art,
                 'desc': fm['description'], 'content': text.strip()}
@@ -351,15 +351,18 @@ def main():
                       'definitiveArticles': len({t['article'] for t in all_tasks if t.get('article')}),
                       'owners': len({t['owner'] for t in all_tasks if t.get('owner')}),
                       'categories': len(cats_meta)},
-            'bundleUrl': 'TaskLibrary-Skills-ready.zip', 'metaArticleUrl': site['metaArticleUrl'],
+            'bundleUrl': 'TaskLibrary-Skills-all.zip', 'metaArticleUrl': site['metaArticleUrl'],
             'updated': site['updated'],
             'categories': [dict(c, tasks=by_cat[c['name']]) for c in cats_meta]}
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     json.dump(data, open(args.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     write_library_index(data, os.path.join(os.path.dirname(args.out), 'library-index.html'))
-    nready = write_ready_zip(data, os.path.dirname(args.out))
-    print(f'ready zip: {nready} skills')
+    nall = write_zip(data, os.path.dirname(args.out), 'TaskLibrary-Skills-all.zip',
+                     'The complete Task Library. Rebuilt on every library build.', False)
+    nready = write_zip(data, os.path.dirname(args.out), 'TaskLibrary-Skills-ready.zip',
+                       'Owner-signed skills only. Rebuilt on every library build.', True)
+    print(f'zips: all={nall}, ready={nready}')
 
     print(f"built {len(all_tasks)}/{len(registry) + len(sheet_only)} skills -> {os.path.relpath(args.out, ROOT)}")
     print(f"stats: {data['stats']}")

@@ -18,9 +18,9 @@ function debounce(fn, ms){ let t; return function(){ clearTimeout(t); const a = 
 const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const STATUS = {
-  'complete':   { label: 'Ready' },
-  'needs-work': { label: 'WIP' },
-  'gap':        { label: 'Unclaimed' }
+  'complete':   { label: 'Complete' },
+  'needs-work': { label: 'Needs work' },
+  'gap':        { label: 'Gap' }
 };
 
 /* ============================================================
@@ -188,7 +188,15 @@ DATA.categories.forEach(function(c, ci){
    Hero, footer, stats, health bar
    ============================================================ */
 const dl = el('#btl-dl');
-if (DATA.bundleUrl){ dl.href = DATA.bundleUrl; dl.textContent = '⬇ Download ' + (DATA.stats.complete || 0) + ' prepared skills (.zip)'; } else { dl.hidden = true; }
+if (DATA.bundleUrl){
+  dl.href = DATA.bundleUrl;
+  dl.textContent = '⬇ Download all ' + (DATA.stats.total || 0) + ' skills (.zip)';
+  var readyLink = document.createElement('a');
+  readyLink.href = 'TaskLibrary-Skills-ready.zip';
+  readyLink.className = 'btl-btn';
+  readyLink.textContent = 'Owner-signed only (' + (DATA.stats.complete || 0) + ') ⬇';
+  dl.parentNode.insertBefore(readyLink, dl.nextSibling);
+} else { dl.hidden = true; }
 const metaBtn = el('#btl-meta');
 if (DATA.metaArticleUrl){ metaBtn.href = DATA.metaArticleUrl; metaBtn.hidden = false; }
 el('#btl-updated').textContent = DATA.updated || '—';
@@ -212,9 +220,9 @@ function countUp(node, val){
 }
 const cards = [
   { k:'total',              label:'Total tasks',         cls:'c-total', icon:'🗂️' },
-  { k:'complete',           label:'Ready',               cls:'c-ok',    icon:'✅', chip:'complete' },
-  { k:'needsWork',          label:'WIP',                 cls:'c-warn',  icon:'🛠️', chip:'needs-work' },
-  { k:'gaps',               label:'Unclaimed',           cls:'c-bad',   icon:'⛳', chip:'gap' },
+  { k:'complete',           label:'Complete',            cls:'c-ok',    icon:'✅', chip:'complete' },
+  { k:'needsWork',          label:'Needs work',          cls:'c-warn',  icon:'🛠️', chip:'needs-work' },
+  { k:'gaps',               label:'Gaps',                cls:'c-bad',   icon:'⛳', chip:'gap' },
   { k:'owners',             label:'Owners',              cls:'c-art',   icon:'👤' },
   { k:'categories',         label:'Categories',          cls:'c-cat',   icon:'🧭' }
 ];
@@ -250,9 +258,9 @@ cards.forEach(function(c){ countUp(el('[data-stat="' + c.k + '"]'), S[c.k] || 0)
    ============================================================ */
 const CHIPS = [
   { key:'all',        label:'All',        cls:'' },
-  { key:'complete',   label:'Ready',      cls:'ch-ok' },
-  { key:'needs-work', label:'WIP',        cls:'ch-warn' },
-  { key:'gap',        label:'Unclaimed',  cls:'ch-bad' }
+  { key:'complete',   label:'Complete',   cls:'ch-ok' },
+  { key:'needs-work', label:'Needs work', cls:'ch-warn' },
+  { key:'gap',        label:'Gaps',       cls:'ch-bad' }
 ];
 el('#btl-chips').innerHTML = CHIPS.map(function(c){
   return '<button type="button" class="btl-chip ' + c.cls + '" data-chip="' + c.key + '" aria-pressed="' + (c.key === 'all') + '">' +
