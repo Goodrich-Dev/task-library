@@ -19,19 +19,15 @@ Task-Library-Standard.md             the spec every skill.md must meet
 
 ## Owning a skill in your own repo
 
-1. Put your `SKILL.md` (Task-Library-Standard format, frontmatter `name` = the slug) in your repo.
-2. Change your skill's entry in `build/registry.json`:
+Nobody edits this repo to own a skill. Everything happens in the **Asset Tracker's Task Library sheet**:
 
-```json
-"google-ads-maa-report": {
-  "source": "github:danielgoodrich/google-ads-analyzer@main:SKILL.md",
-  "category": "Strategy & Measurement"
-}
-```
+1. Put your `SKILL.md` in your repo at `skills/<slug>/SKILL.md` (standard Claude skill format — `name` + `description` frontmatter, `name` = the slug).
+2. On your skill's row in the sheet: put your name in **Owner**, your repo URL in **Source Repo**, and set **Status** (`wip` while you work it, `ready` when you stand behind it).
+3. Done. The next build (daily, or manual run) fetches your file, and if a hub draft existed it's superseded automatically. From then on you only ever push to your own repo.
 
-3. That one-line PR is the last time you touch this repo. Push to *your* repo; the daily build (or any manual run) picks it up.
+The precedence rule: **sheet beats registry beats hub file** — a skill has exactly one live source, and the sheet's Source Repo cell is the switch. The Slug column completes the address, so a bare repo URL is enough when you follow the standard layout; use a deeper `/tree/` or `/blob/` link only if your file lives elsewhere.
 
-Pin to a commit SHA instead of `@main` to freeze a version. Fetch failures fall back to the last good cached copy, so a deleted repo never blanks the dashboard. Private repos need `SKILLS_READ_TOKEN` set in Actions secrets.
+`build/registry.json` is maintainer plumbing, not a contributor surface: it holds the hub-resident skills and the advanced cases (commit-SHA pinning, release-asset downloads). Fetch failures fall back to the last good cached copy, so a deleted repo never blanks the dashboard. Private repos need `SKILLS_READ_TOKEN` set in Actions secrets.
 
 ## Validation
 
