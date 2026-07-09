@@ -188,7 +188,7 @@ DATA.categories.forEach(function(c, ci){
    Hero, footer, stats, health bar
    ============================================================ */
 const dl = el('#btl-dl');
-if (DATA.bundleUrl){ dl.href = DATA.bundleUrl; } else { dl.hidden = true; }
+if (DATA.bundleUrl){ dl.href = DATA.bundleUrl; dl.textContent = '⬇ Download ' + (DATA.stats.complete || 0) + ' prepared skills (.zip)'; } else { dl.hidden = true; }
 const metaBtn = el('#btl-meta');
 if (DATA.metaArticleUrl){ metaBtn.href = DATA.metaArticleUrl; metaBtn.hidden = false; }
 el('#btl-updated').textContent = DATA.updated || '—';
