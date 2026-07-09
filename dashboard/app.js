@@ -20,7 +20,7 @@ const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion:
 const STATUS = {
   'complete':   { label: 'Ready' },
   'needs-work': { label: 'WIP' },
-  'gap':        { label: 'Gap' }
+  'gap':        { label: 'Unclaimed' }
 };
 
 /* ============================================================
