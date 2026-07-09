@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local Service Spotlight Task Library — 239 SOPs documented to the definitive-article standard</title>
+<meta name="description" content="The Local Service Spotlight Task Library: 239 SOPs, each captured as a skill.md with a QA gate and meta-article example, so humans and AI agents run them the same way.">
+</head>
+<body>
+<!-- ============================================================
+     Local Service Spotlight Task Library Dashboard
+     Self-contained: system fonts, inline CSS+JS, zero external deps.
+     Everything is scoped under #btl-app for safe wp:html embedding.
+     Paste everything inside <body> into a WordPress wp:html block.
+     ============================================================ -->
+
+<style>
+/* ================= Scope + tokens ================= */
+#btl-app{
+  --bg0:#070b16; --bg1:#0b1124; --card:#101831; --card2:#0c1326;
+  --line:rgba(148,163,255,.10); --line2:rgba(148,163,255,.20);
+  --ink:#e9edf9; --mut:#9aa6c6; --dim:#6d7795;
+  --blue:#4f8cff; --violet:#8b5cf6; --cyan:#22d3ee; --green:#34d399;
+  --amber:#fbbf24; --red:#f87171; --pink:#f472b6;
+  --grad:linear-gradient(120deg,#4f8cff,#8b5cf6 55%,#f472b6);
+  --shadow:0 14px 44px rgba(2,6,23,.55);
+  --r:18px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  position:relative; overflow:clip; border-radius:26px;
+  background:var(--bg0); color:var(--ink);
+  font-family:var(--font); font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+#btl-app,#btl-app *,#btl-app *::before,#btl-app *::after{box-sizing:border-box;margin:0;padding:0;border:0 solid transparent}
+#btl-app img,#btl-app svg{display:block;max-width:100%}
+#btl-app a{color:inherit;text-decoration:none}
+#btl-app button{font:inherit;color:inherit;background:none;cursor:pointer}
+#btl-app input{font:inherit;color:inherit}
+#btl-app ul,#btl-app ol{list-style:none}
+#btl-app :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+#btl-app .btl-wrap{max-width:1180px;margin:0 auto;padding-left:clamp(18px,3.5vw,44px);padding-right:clamp(18px,3.5vw,44px)}
+
+/* ================= Ambient background ================= */
+#btl-app .btl-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
+#btl-app .btl-bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5}
+#btl-app .btl-bg .b1{width:560px;height:560px;left:-160px;top:-180px;background:radial-gradient(circle,rgba(79,140,255,.32),transparent 65%)}
+#btl-app .btl-bg .b2{width:640px;height:640px;right:-200px;top:120px;background:radial-gradient(circle,rgba(139,92,246,.26),transparent 65%)}
+#btl-app .btl-bg .b3{width:520px;height:520px;left:30%;top:880px;background:radial-gradient(circle,rgba(244,114,182,.14),transparent 65%)}
+#btl-app .btl-bg .grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(148,163,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(148,163,255,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 600px at 50% 0,#000 35%,transparent 75%);
+  mask-image:radial-gradient(ellipse 90% 600px at 50% 0,#000 35%,transparent 75%)}
+#btl-app>:not(.btl-bg){position:relative;z-index:1}
+
+/* ================= Pre-injection notice ================= */
+#btl-app #btl-noinject{margin:48px auto;max-width:720px;padding:26px 30px;border:1px dashed var(--line2);border-radius:var(--r);
+  background:rgba(251,191,36,.06);color:var(--mut);font-size:14.5px}
+#btl-app #btl-noinject strong{color:var(--amber)}
+
+/* ================= Hero ================= */
+#btl-app .btl-hero{padding-top:clamp(54px,8vw,96px);padding-bottom:clamp(30px,4vw,48px);text-align:center}
+#btl-app .btl-eyebrow{display:inline-flex;align-items:center;gap:9px;padding:7px 16px;border:1px solid var(--line2);border-radius:999px;
+  background:rgba(79,140,255,.08);color:#bcd0ff;font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+#btl-app .btl-eyebrow .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(52,211,153,.55);animation:btl-pulse 2.4s ease-out infinite}
+@keyframes btl-pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}70%{box-shadow:0 0 0 11px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+#btl-app .btl-title{margin-top:22px;font-size:clamp(34px,5.4vw,62px);font-weight:800;letter-spacing:-.025em;line-height:1.06}
+#btl-app .btl-title span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+#btl-app .btl-sub{margin:18px auto 0;max-width:760px;color:var(--mut);font-size:clamp(16px,1.9vw,19.5px);line-height:1.6}
+#btl-app .btl-cta{margin-top:30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+#btl-app .btl-btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:999px;font-weight:700;font-size:15.5px;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}
+#btl-app .btl-btn-primary{background:var(--grad);color:#fff;box-shadow:0 10px 30px rgba(99,102,241,.38)}
+#btl-app .btl-btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(99,102,241,.5)}
+#btl-app .btl-btn-ghost{border:1px solid var(--line2);color:var(--ink);background:rgba(16,24,49,.6)}
+#btl-app .btl-btn-ghost:hover{border-color:rgba(148,163,255,.45);background:rgba(20,30,60,.8);transform:translateY(-2px)}
+#btl-app .btl-updated{margin-top:20px;color:var(--dim);font-size:13px;letter-spacing:.04em}
+#btl-app .btl-updated span{color:var(--mut);font-weight:600}
+
+/* ================= Stat cards ================= */
+#btl-app .btl-stats{padding-top:8px;padding-bottom:clamp(26px,3.5vw,40px)}
+#btl-app .btl-statgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+#btl-app .btl-stat{--acc:var(--blue);position:relative;overflow:hidden;padding:20px 18px 17px;border:1px solid var(--line);border-radius:var(--r);
+  background:linear-gradient(180deg,rgba(22,32,62,.75),rgba(13,19,38,.9));box-shadow:0 6px 22px rgba(2,6,23,.35);
+  transition:transform .18s ease,border-color .18s ease}
+#btl-app .btl-stat:hover{transform:translateY(-3px);border-color:rgba(148,163,255,.3)}
+#btl-app .btl-stat::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),transparent 85%)}
+#btl-app .btl-stat .ic{font-size:17px;opacity:.85}
+#btl-app .btl-stat .n{margin-top:8px;font-size:clamp(26px,2.6vw,34px);font-weight:800;letter-spacing:-.02em;color:var(--acc);font-variant-numeric:tabular-nums}
+#btl-app .btl-stat .l{margin-top:3px;color:var(--mut);font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+#btl-app .btl-stat.c-total{--acc:#bcd0ff}
+#btl-app .btl-stat.c-ok{--acc:var(--green)}
+#btl-app .btl-stat.c-warn{--acc:var(--amber)}
+#btl-app .btl-stat.c-bad{--acc:var(--red)}
+#btl-app .btl-stat.c-art{--acc:var(--violet)}
+#btl-app .btl-stat.c-cat{--acc:var(--cyan)}
+
+/* ================= Health bar ================= */
+#btl-app .btl-health{margin-top:16px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r);background:rgba(13,19,38,.8)}
+#btl-app .btl-health-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+#btl-app .btl-health-label{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+#btl-app #btl-health-pct{font-size:13.5px;font-weight:700;color:var(--green)}
+#btl-app .btl-health-bar{display:flex;height:14px;margin-top:11px;border-radius:999px;overflow:hidden;background:rgba(148,163,255,.08)}
+#btl-app .btl-health-bar span{height:100%;transition:width .9s cubic-bezier(.22,1,.36,1)}
+#btl-app .btl-health-bar .hb-ok{background:linear-gradient(90deg,#10b981,#34d399)}
+#btl-app .btl-health-bar .hb-warn{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+#btl-app .btl-health-bar .hb-bad{background:linear-gradient(90deg,#ef4444,#f87171)}
+#btl-app .btl-health-legend{display:flex;gap:18px;margin-top:11px;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
+#btl-app .btl-health-legend b{color:var(--ink);font-weight:700}
+#btl-app .btl-health-legend .d{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+#btl-app .btl-health-legend .d-ok{background:var(--green)}
+#btl-app .btl-health-legend .d-warn{background:var(--amber)}
+#btl-app .btl-health-legend .d-bad{background:var(--red)}
+/* ================= Recursive self-improvement (centerpiece) ================= */
+#btl-app .btl-loop{padding-bottom:clamp(28px,4vw,46px)}
+#btl-app .btl-loop-card{position:relative;overflow:hidden;border:1px solid rgba(139,92,246,.28);border-radius:24px;
+  background:radial-gradient(1100px 500px at 18% -10%,rgba(139,92,246,.16),transparent 60%),
+             radial-gradient(900px 480px at 95% 110%,rgba(79,140,255,.12),transparent 60%),
+             linear-gradient(180deg,#0e1530,#0a1023);
+  box-shadow:var(--shadow);padding:clamp(26px,4vw,46px)}
+#btl-app .btl-loop-card::before{content:"";position:absolute;inset:0;border-radius:24px;pointer-events:none;
+  background:linear-gradient(120deg,rgba(79,140,255,.35),rgba(139,92,246,.3) 50%,rgba(244,114,182,.25));
+  -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);-webkit-mask-composite:xor;
+          mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);mask-composite:exclude;padding:1px;opacity:.6}
+#btl-app .btl-overline{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:#c4b5fd;background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.3);border-radius:999px;padding:6px 14px}
+#btl-app .btl-loop-head h2{margin-top:14px;font-size:clamp(26px,3.4vw,40px);font-weight:800;letter-spacing:-.02em}
+#btl-app .btl-loop-head h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+#btl-app .btl-loop-head>p{margin-top:10px;max-width:780px;color:var(--mut);font-size:15.5px}
+#btl-app .btl-loop-grid{margin-top:30px;display:grid;grid-template-columns:minmax(0,46%) minmax(0,1fr);gap:clamp(24px,4vw,52px);align-items:center}
+#btl-app .btl-loop-art{position:relative}
+#btl-app .btl-loop-art svg{width:100%;max-width:520px;margin:0 auto;height:auto}
+#btl-app .btl-loop-caption{margin-top:14px;text-align:center;font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.02em}
+#btl-app .btl-loop-caption b{color:#c4b5fd;font-weight:600}
+/* SVG internals */
+#btl-app .btl-ring{fill:none;stroke:rgba(148,163,255,.16);stroke-width:1.5;stroke-dasharray:2 9;stroke-linecap:round}
+#btl-app .btl-arc{fill:none;stroke:rgba(154,166,255,.55);stroke-width:2}
+#btl-app .btl-node .nc{fill:#0f1730;stroke:var(--nc,#4f8cff);stroke-width:1.6}
+#btl-app .btl-node .nh{fill:var(--nc,#4f8cff);opacity:.10}
+#btl-app .btl-node .ne{font-size:17px;text-anchor:middle}
+#btl-app .btl-node .nt{font-family:var(--font);font-size:14.5px;font-weight:700;fill:#e9edf9;text-anchor:middle}
+#btl-app .btl-node .ns{font-family:var(--mono);font-size:8.6px;fill:#9aa6c6;text-anchor:middle;letter-spacing:.02em}
+#btl-app .btl-node{animation:btl-nodepulse 5.2s ease-in-out infinite}
+#btl-app .btl-node.n2{animation-delay:1.04s}#btl-app .btl-node.n3{animation-delay:2.08s}
+#btl-app .btl-node.n4{animation-delay:3.12s}#btl-app .btl-node.n5{animation-delay:4.16s}
+@keyframes btl-nodepulse{0%,14%,100%{filter:none}7%{filter:drop-shadow(0 0 7px var(--nc,#4f8cff))}}
+#btl-app .btl-orbit{transform-origin:260px 260px;transform-box:view-box;animation:btl-spin 13s linear infinite}
+@keyframes btl-spin{to{transform:rotate(360deg)}}
+#btl-app .btl-orbit .dot{fill:#fff}
+#btl-app .btl-orbit .dothalo{fill:rgba(139,92,246,.4)}
+#btl-app .btl-center-sym{font-size:46px;fill:#c4b5fd;text-anchor:middle;font-weight:700}
+#btl-app .btl-center-cap{font-family:var(--font);font-size:13px;fill:#9aa6c6;text-anchor:middle;font-weight:600;letter-spacing:.06em}
+/* Manifesto */
+#btl-app .btl-manifesto p{color:#c7d0ea;font-size:15.5px;line-height:1.7}
+#btl-app .btl-manifesto p+p{margin-top:12px}
+#btl-app .btl-manifesto strong{color:#fff}
+#btl-app .btl-creed{margin-top:18px;display:grid;gap:9px}
+#btl-app .btl-creed li{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;border:1px solid var(--line);border-radius:13px;
+  background:rgba(16,24,49,.55);font-size:14px;color:var(--mut)}
+#btl-app .btl-creed li b{color:var(--ink);font-weight:650}
+#btl-app .btl-creed .ck{flex:none;width:21px;height:21px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(52,211,153,.14);color:var(--green);font-size:12px;font-weight:800;margin-top:1px}
+/* Provenance / changelog */
+#btl-app .btl-prov{margin-top:20px;border:1px solid var(--line2);border-radius:16px;background:rgba(9,14,30,.85);overflow:hidden}
+#btl-app .btl-prov-head{display:flex;align-items:center;gap:9px;padding:11px 16px;border-bottom:1px solid var(--line);
+  font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);background:rgba(16,24,49,.6)}
+#btl-app .btl-prov-entry{position:relative;padding:15px 18px 13px 38px}
+#btl-app .btl-prov-entry::before{content:"";position:absolute;left:18px;top:21px;width:9px;height:9px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 0 4px rgba(52,211,153,.15)}
+#btl-app .btl-prov-v{font-family:var(--mono);font-size:12.5px;font-weight:700;color:#c4b5fd;background:rgba(139,92,246,.14);
+  border:1px solid rgba(139,92,246,.3);border-radius:6px;padding:2px 8px;margin-right:9px}
+#btl-app .btl-prov-date{font-family:var(--mono);font-size:12px;color:var(--dim)}
+#btl-app .btl-prov-entry p{margin-top:8px;font-size:13.5px;color:#c7d0ea;line-height:1.6}
+#btl-app .btl-prov-checks{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#btl-app .btl-prov-checks span{font-family:var(--mono);font-size:11px;color:var(--green);background:rgba(52,211,153,.09);
+  border:1px solid rgba(52,211,153,.25);border-radius:999px;padding:3px 10px}
+#btl-app .btl-prov-note{padding:11px 18px 14px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--dim)}
+#btl-app .btl-prov-note em{color:var(--mut);font-style:italic}
+
+/* ================= Sticky controls ================= */
+#btl-app .btl-controls{position:sticky;top:0;z-index:40;background:rgba(8,12,24,.88);border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:13px 0 11px}
+#btl-app .btl-controls-in{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#btl-app .btl-search{position:relative;flex:1 1 320px;display:flex;align-items:center;min-width:240px}
+#btl-app .btl-search svg{position:absolute;left:14px;width:16px;height:16px;stroke:var(--dim);fill:none;stroke-width:2;pointer-events:none}
+#btl-app .btl-search input{width:100%;padding:11px 38px 11px 40px;border:1px solid var(--line2);border-radius:12px;
+  background:rgba(16,24,49,.7);color:var(--ink);font-size:14.5px;-webkit-appearance:none;appearance:none}
+#btl-app .btl-search input::placeholder{color:var(--dim)}
+#btl-app .btl-search input:focus{outline:none;border-color:rgba(79,140,255,.55);box-shadow:0 0 0 3px rgba(79,140,255,.15)}
+#btl-app .btl-search input::-webkit-search-cancel-button{display:none}
+#btl-app #btl-clear{position:absolute;right:8px;width:24px;height:24px;border-radius:8px;color:var(--dim);font-size:13px;line-height:1}
+#btl-app #btl-clear:hover{background:rgba(148,163,255,.12);color:var(--ink)}
+#btl-app .btl-chips{display:flex;gap:8px;flex-wrap:wrap}
+#btl-app .btl-chip{--cc:#bcd0ff;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid var(--line2);
+  border-radius:999px;font-size:13px;font-weight:600;color:var(--mut);background:rgba(16,24,49,.5);
+  transition:border-color .15s ease,background .15s ease,color .15s ease}
+#btl-app .btl-chip .cd{width:8px;height:8px;border-radius:50%;background:var(--cc)}
+#btl-app .btl-chip .cn{font-family:var(--mono);font-size:11.5px;color:var(--dim);background:rgba(148,163,255,.1);border-radius:999px;padding:1px 8px;font-variant-numeric:tabular-nums}
+#btl-app .btl-chip:hover{border-color:rgba(148,163,255,.4);color:var(--ink)}
+#btl-app .btl-chip[aria-pressed="true"]{background:color-mix(in srgb,var(--cc) 16%,transparent);border-color:color-mix(in srgb,var(--cc) 55%,transparent);color:#fff}
+#btl-app .btl-chip[aria-pressed="true"] .cn{color:#fff;background:rgba(255,255,255,.14)}
+#btl-app .btl-chip.ch-ok{--cc:var(--green)}#btl-app .btl-chip.ch-warn{--cc:var(--amber)}#btl-app .btl-chip.ch-bad{--cc:var(--red)}
+#btl-app .btl-xc{display:flex;gap:8px;margin-left:auto}
+#btl-app .btl-mini{padding:8px 14px;border:1px solid var(--line2);border-radius:10px;font-size:12.5px;font-weight:600;color:var(--mut);
+  background:rgba(16,24,49,.5);transition:all .15s ease;white-space:nowrap}
+#btl-app .btl-mini:hover{border-color:rgba(148,163,255,.45);color:var(--ink);background:rgba(22,32,62,.8)}
+#btl-app .btl-resline{margin-top:9px;font-size:12.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+#btl-app .btl-resline b{color:var(--mut);font-weight:650}
+
+/* ================= Category sections ================= */
+#btl-app .btl-cats{display:grid;gap:14px;padding-top:26px;padding-bottom:10px}
+#btl-app .btl-cat{--cat:#4f8cff;border:1px solid var(--line);border-radius:var(--r);background:rgba(13,19,38,.72);
+  box-shadow:0 6px 22px rgba(2,6,23,.3);overflow:hidden;transition:border-color .18s ease}
+#btl-app .btl-cat:hover{border-color:color-mix(in srgb,var(--cat) 35%,transparent)}
+#btl-app .btl-cat.is-zero{display:none}
+#btl-app .btl-cat-head{display:flex;align-items:center;gap:15px;width:100%;text-align:left;padding:17px 20px;position:relative}
+#btl-app .btl-cat-head::before{content:"";position:absolute;left:0;top:14%;bottom:14%;width:3px;border-radius:0 3px 3px 0;
+  background:linear-gradient(180deg,var(--cat),transparent)}
+#btl-app .btl-cat-head:hover{background:rgba(148,163,255,.04)}
+#btl-app .btl-cat-icon{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:21px;background:color-mix(in srgb,var(--cat) 16%,transparent);border:1px solid color-mix(in srgb,var(--cat) 35%,transparent)}
+#btl-app .btl-cat-info{min-width:0;flex:1}
+#btl-app .btl-cat-name{display:block;font-size:16.5px;font-weight:700;letter-spacing:-.01em}
+#btl-app .btl-cat-desc{display:block;margin-top:2px;font-size:13px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#btl-app .btl-cat-side{display:flex;align-items:center;gap:10px;flex:none}
+#btl-app .btl-cat-count{font-family:var(--mono);font-size:11.5px;color:var(--mut);background:rgba(148,163,255,.09);
+  border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#btl-app .btl-cat-match{font-family:var(--mono);font-size:11.5px;color:color-mix(in srgb,var(--cat) 85%,#fff);
+  background:color-mix(in srgb,var(--cat) 14%,transparent);border:1px solid color-mix(in srgb,var(--cat) 40%,transparent);
+  border-radius:999px;padding:4px 11px;white-space:nowrap}
+#btl-app .btl-chev{color:var(--dim);font-size:13px;transition:transform .22s ease}
+#btl-app .btl-cat-head[aria-expanded="true"] .btl-chev{transform:rotate(180deg)}
+#btl-app .btl-cat-body{border-top:1px solid var(--line)}
+
+/* ================= Task rows ================= */
+#btl-app .btl-row{display:flex;gap:14px;align-items:flex-start;padding:15px 20px 15px 22px;border-bottom:1px solid rgba(148,163,255,.06)}
+#btl-app .btl-row:last-child{border-bottom:0}
+#btl-app .btl-row:hover{background:rgba(148,163,255,.045)}
+#btl-app .btl-dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:7px}
+#btl-app .dot-complete{background:var(--green);box-shadow:0 0 8px rgba(52,211,153,.6)}
+#btl-app .dot-needs-work{background:var(--amber);box-shadow:0 0 8px rgba(251,191,36,.55)}
+#btl-app .dot-gap{background:var(--red);box-shadow:0 0 8px rgba(248,113,113,.55)}
+#btl-app .btl-row-main{flex:1;min-width:0}
+#btl-app .btl-row-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+#btl-app .btl-row-title{font-size:15px;font-weight:650;letter-spacing:-.005em}
+#btl-app .btl-status{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;border-radius:999px;padding:3px 9px;white-space:nowrap}
+#btl-app .st-complete{color:var(--green);background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3)}
+#btl-app .st-needs-work{color:var(--amber);background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3)}
+#btl-app .st-gap{color:var(--red);background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3)}
+#btl-app .btl-stage{font-family:var(--mono);font-size:10.5px;color:var(--cyan);background:rgba(34,211,238,.09);
+  border:1px solid rgba(34,211,238,.28);border-radius:999px;padding:3px 9px;white-space:nowrap}
+#btl-app .btl-row-desc{margin-top:4px;font-size:13.5px;color:var(--mut);line-height:1.55}
+#btl-app .btl-row-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+#btl-app .btl-tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;border-radius:5px;padding:2.5px 7px}
+#btl-app .tag-sop{color:#9ec1ff;background:rgba(79,140,255,.1);border:1px solid rgba(79,140,255,.3)}
+#btl-app .tag-qa{color:var(--green);background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.28)}
+#btl-app .tag-ex{color:var(--amber);background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.28)}
+#btl-app .btl-art{font-size:12.5px;font-weight:600;color:#9ec1ff;border-bottom:1px solid rgba(158,193,255,.35);padding-bottom:1px}
+#btl-app .btl-art:hover{color:#cfe0ff;border-color:#cfe0ff}
+#btl-app .btl-row-actions{display:flex;gap:7px;flex:none;margin-top:2px}
+#btl-app .btl-view{border-color:rgba(79,140,255,.4);color:#9ec1ff}
+#btl-app .btl-view:hover{background:rgba(79,140,255,.12);color:#cfe0ff;border-color:rgba(79,140,255,.6)}
+/* ================= Empty state ================= */
+#btl-app .btl-empty{margin:26px 0 10px;padding:46px 28px;text-align:center;border:1px dashed var(--line2);border-radius:var(--r);background:rgba(13,19,38,.5)}
+#btl-app .btl-empty .ee{font-size:30px}
+#btl-app .btl-empty h3{margin-top:10px;font-size:18px;font-weight:700}
+#btl-app .btl-empty p{margin-top:6px;color:var(--mut);font-size:14px}
+#btl-app .btl-empty button{margin-top:16px}
+
+/* ================= Modal ================= */
+#btl-app .btl-modal{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:clamp(10px,3vw,36px)}
+#btl-app .btl-modal[hidden]{display:none}
+#btl-app .btl-m-backdrop{position:absolute;inset:0;background:rgba(3,6,16,.74);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+#btl-app .btl-m-panel{position:relative;width:min(900px,100%);max-height:88vh;display:flex;flex-direction:column;
+  border:1px solid var(--line2);border-radius:20px;background:linear-gradient(180deg,#111936,#0b1124);
+  box-shadow:0 30px 90px rgba(0,0,0,.6);animation:btl-modal-in .22s cubic-bezier(.22,1,.36,1)}
+@keyframes btl-modal-in{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+#btl-app .btl-m-head{display:flex;align-items:flex-start;gap:16px;padding:20px 22px 16px;border-bottom:1px solid var(--line)}
+#btl-app .btl-m-info{flex:1;min-width:0}
+#btl-app .btl-m-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#btl-app .btl-m-cat{font-size:12px;font-weight:600;color:var(--mut);background:rgba(148,163,255,.08);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+#btl-app #btl-m-title{margin-top:9px;font-size:20px;font-weight:750;letter-spacing:-.01em;line-height:1.25}
+#btl-app .btl-m-sub{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:7px}
+#btl-app .btl-slug{font-family:var(--mono);font-size:11.5px;color:var(--dim);background:rgba(148,163,255,.07);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+#btl-app .btl-m-actions{display:flex;gap:8px;flex:none;align-items:center}
+#btl-app .btl-btn-small{padding:8px 15px;border-radius:10px;font-size:12.5px;font-weight:650;border:1px solid rgba(79,140,255,.45);color:#9ec1ff;background:rgba(79,140,255,.1);transition:all .15s ease}
+#btl-app .btl-btn-small:hover{background:rgba(79,140,255,.2);color:#fff}
+#btl-app .btl-m-close{width:34px;height:34px;border-radius:10px;border:1px solid var(--line2);color:var(--mut);font-size:15px;line-height:1;transition:all .15s ease}
+#btl-app .btl-m-close:hover{color:#fff;border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.1)}
+#btl-app .btl-m-body{overflow:auto;padding:22px 26px 30px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(148,163,255,.25) transparent}
+#btl-app .btl-m-body::-webkit-scrollbar{width:9px}
+#btl-app .btl-m-body::-webkit-scrollbar-thumb{background:rgba(148,163,255,.22);border-radius:99px}
+
+/* ================= Markdown ================= */
+#btl-app .btl-md{font-size:14.5px;line-height:1.68;color:#cdd6ee}
+#btl-app .btl-md>*+*{margin-top:13px}
+#btl-app .btl-md h1{font-size:22px;font-weight:800;letter-spacing:-.015em;color:#fff;margin-top:8px}
+#btl-app .btl-md h2{font-size:17.5px;font-weight:750;color:#fff;margin-top:28px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+#btl-app .btl-md h2:first-child{margin-top:0}
+#btl-app .btl-md h3{font-size:15.5px;font-weight:700;color:#e9edf9;margin-top:20px}
+#btl-app .btl-md h4,#btl-app .btl-md h5,#btl-app .btl-md h6{font-size:14px;font-weight:700;color:#dfe5f5;margin-top:16px}
+#btl-app .btl-md p strong{color:#fff;font-weight:650}
+#btl-app .btl-md a{color:#9ec1ff;border-bottom:1px solid rgba(158,193,255,.35)}
+#btl-app .btl-md a:hover{color:#cfe0ff;border-color:#cfe0ff}
+#btl-app .btl-md ul,#btl-app .btl-md ol{padding-left:24px;display:grid;gap:5px}
+#btl-app .btl-md ul{list-style:disc}
+#btl-app .btl-md ol{list-style:decimal}
+#btl-app .btl-md ul ul,#btl-app .btl-md ol ul{list-style:circle;margin-top:5px}
+#btl-app .btl-md li::marker{color:var(--violet)}
+#btl-app .btl-md li.task{list-style:none;display:flex;gap:9px;margin-left:-20px}
+#btl-app .btl-md li.task .cb{flex:none;width:17px;height:17px;margin-top:3px;border-radius:5px;border:1.5px solid rgba(148,163,255,.4);
+  display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:transparent}
+#btl-app .btl-md li.task .cb.on{background:rgba(52,211,153,.16);border-color:var(--green);color:var(--green)}
+#btl-app .btl-md code{font-family:var(--mono);font-size:12.8px;color:#bcd0ff;background:rgba(79,140,255,.1);border:1px solid rgba(79,140,255,.18);border-radius:5px;padding:1.5px 6px}
+#btl-app .btl-md pre{background:#070c1c;border:1px solid var(--line);border-radius:12px;padding:15px 17px;overflow:auto}
+#btl-app .btl-md pre code{display:block;background:none;border:0;padding:0;color:#c7d0ea;font-size:12.5px;line-height:1.6;white-space:pre}
+#btl-app .btl-md blockquote{border-left:3px solid var(--violet);background:rgba(139,92,246,.07);border-radius:0 10px 10px 0;padding:11px 16px;color:#c0c9e4}
+#btl-app .btl-md blockquote>*+*{margin-top:8px}
+#btl-app .btl-md hr{border:0;height:1px;background:var(--line2);margin:20px 0}
+#btl-app .btl-tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+#btl-app .btl-md table{width:100%;border-collapse:collapse;font-size:13px}
+#btl-app .btl-md th{text-align:left;font-weight:700;color:#e9edf9;background:rgba(148,163,255,.08);padding:9px 13px;border-bottom:1px solid var(--line2);white-space:nowrap}
+#btl-app .btl-md td{padding:8px 13px;border-bottom:1px solid rgba(148,163,255,.06);vertical-align:top;color:#c7d0ea}
+#btl-app .btl-md tr:last-child td{border-bottom:0}
+#btl-app .btl-md tbody tr:nth-child(even) td{background:rgba(148,163,255,.025)}
+/* frontmatter meta block */
+#btl-app .btl-fm{border:1px solid rgba(139,92,246,.3);border-radius:12px;background:rgba(139,92,246,.06);overflow:hidden}
+#btl-app .btl-fm .fm-t{padding:8px 14px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#c4b5fd;background:rgba(139,92,246,.12);border-bottom:1px solid rgba(139,92,246,.22)}
+#btl-app .btl-fm .fm-row{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:7px 14px;border-bottom:1px solid rgba(139,92,246,.1);font-size:13px}
+#btl-app .btl-fm .fm-row:last-child{border-bottom:0}
+#btl-app .btl-fm .fm-k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#a78bfa;padding-top:2px}
+#btl-app .btl-fm .fm-v{color:#dfe5f5;overflow-wrap:anywhere}
+
+/* ================= Toast ================= */
+#btl-app .btl-toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);z-index:99999;opacity:0;pointer-events:none;
+  background:#0e1730;border:1px solid rgba(52,211,153,.45);color:#d6f5e8;font-size:13.5px;font-weight:600;
+  border-radius:999px;padding:11px 22px;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:opacity .22s ease,transform .22s ease;max-width:90vw}
+#btl-app .btl-toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ================= Footer ================= */
+#btl-app .btl-foot{margin-top:34px;padding:0 22px 42px;text-align:center}
+#btl-app .btl-foot-line{height:1px;max-width:1092px;margin:0 auto 28px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.5),transparent)}
+#btl-app .btl-foot-main{font-size:14px;color:var(--mut)}
+#btl-app .btl-foot-main strong{color:var(--ink);font-weight:700}
+#btl-app .btl-foot-links{margin-top:10px;font-size:13px;color:var(--dim);display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
+#btl-app .btl-foot-links a{color:#9ec1ff;border-bottom:1px solid rgba(158,193,255,.3);padding-bottom:1px}
+#btl-app .btl-foot-links a:hover{color:#cfe0ff;border-color:#cfe0ff}
+#btl-app .btl-foot-tag{margin-top:16px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.04em}
+
+/* ================= Responsive ================= */
+@media (max-width:1020px){
+  #btl-app .btl-statgrid{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:880px){
+  #btl-app .btl-loop-grid{grid-template-columns:1fr}
+  #btl-app .btl-loop-art svg{max-width:430px}
+  #btl-app .btl-xc{margin-left:0;width:100%}
+  #btl-app .btl-xc .btl-mini{flex:1}
+}
+@media (max-width:640px){
+  #btl-app{border-radius:18px}
+  #btl-app .btl-statgrid{grid-template-columns:repeat(2,1fr);gap:10px}
+  #btl-app .btl-cat-desc{white-space:normal}
+  #btl-app .btl-cat-count{display:none}
+  #btl-app .btl-row{flex-wrap:wrap;padding:14px 16px}
+  #btl-app .btl-dot{margin-top:6px}
+  #btl-app .btl-row-main{flex-basis:calc(100% - 23px)}
+  #btl-app .btl-row-actions{width:100%;margin-left:23px}
+  #btl-app .btl-row-actions .btl-mini{flex:1;text-align:center}
+  #btl-app .btl-cta .btl-btn{width:100%;justify-content:center}
+  #btl-app .btl-m-head{flex-wrap:wrap}
+  #btl-app .btl-m-actions{order:-1;margin-left:auto}
+  #btl-app .btl-fm .fm-row{grid-template-columns:1fr;gap:2px}
+}
+
+/* ================= Reduced motion ================= */
+@media (prefers-reduced-motion:reduce){
+  #btl-app *,#btl-app *::before,#btl-app *::after{animation:none !important;transition:none !important}
+}
+</style>
+<div id="btl-app">
+  <div class="btl-bg" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><span class="grid"></span></div>
+
+  <div class="btl-wrap"><div id="btl-noinject" hidden>
+    <strong>Preview note:</strong> the data payload has not been injected yet. This shell expects its
+    <code>DATA</code> block to be filled by the build script (239 tasks, 12 categories, full skill.md content).
+    Everything below will light up once the data lands.
+  </div></div>
+
+  <!-- ============ 1. HERO ============ -->
+  <header class="btl-hero btl-wrap">
+    <div class="btl-eyebrow"><span class="pulse"></span>Local Service Spotlight Content Factory</div>
+    <h1 class="btl-title">Local Service Spotlight <span>Task Library</span></h1>
+    <p class="btl-sub">239 SOPs — every task documented to the definitive-article standard, so humans and AI agents run them the same way.</p>
+    <div class="btl-cta">
+      <a id="btl-dl" class="btl-btn btl-btn-primary" href="#">⬇ Download all 239 skills (.zip)</a>
+      <a id="btl-meta" class="btl-btn btl-btn-ghost" href="#" target="_blank" rel="noopener" hidden>How we built this →</a>
+    </div>
+    <div class="btl-updated">Last updated: <span id="btl-updated">—</span></div>
+  </header>
+
+  <!-- ============ 2. STATS ============ -->
+  <section class="btl-wrap btl-stats" aria-label="Library statistics">
+    <div class="btl-statgrid" id="btl-statgrid"></div>
+    <div class="btl-health">
+      <div class="btl-health-top"><span class="btl-health-label">Library health</span><span id="btl-health-pct"></span></div>
+      <div class="btl-health-bar" id="btl-health-bar"></div>
+      <div class="btl-health-legend" id="btl-health-legend"></div>
+    </div>
+  </section>
+
+  <!-- ============ 3. RECURSIVE SELF-IMPROVEMENT ============ -->
+  <section class="btl-wrap btl-loop" aria-labelledby="btl-loop-h">
+    <div class="btl-loop-card">
+      <div class="btl-loop-head">
+        <span class="btl-overline">⭐ The engine</span>
+        <h2 id="btl-loop-h">Recursive <em>self-improvement</em></h2>
+        <p>This library is not a wiki that rots. It is a loop that runs. Every task executed by the team — human or AI — passes through five gates, and the documentation comes out sharper than it went in.</p>
+      </div>
+      <div class="btl-loop-grid">
+        <div class="btl-loop-art">
+          <svg viewBox="0 0 520 520" role="img" aria-label="The improvement loop: Do, then Document as skill.md, then QA against the Definition of Done, then publish an Example meta-article, then Improve the SOP, and repeat.">
+            <defs>
+              <marker id="btlArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="rgba(154,166,255,.8)"></path>
+              </marker>
+            </defs>
+            <circle class="btl-ring" cx="260" cy="260" r="190"></circle>
+            <path class="btl-arc" d="M315.5 78.3 A190 190 0 0 1 415.6 151.0" marker-end="url(#btlArrow)"></path>
+            <path class="btl-arc" d="M450.0 256.7 A190 190 0 0 1 411.8 374.3" marker-end="url(#btlArrow)"></path>
+            <path class="btl-arc" d="M321.9 439.7 A190 190 0 0 1 198.1 439.7" marker-end="url(#btlArrow)"></path>
+            <path class="btl-arc" d="M108.2 374.3 A190 190 0 0 1 70.0 256.7" marker-end="url(#btlArrow)"></path>
+            <path class="btl-arc" d="M104.4 151.0 A190 190 0 0 1 204.5 78.3" marker-end="url(#btlArrow)"></path>
+            <g class="btl-orbit"><circle class="dothalo" cx="260" cy="70" r="12"></circle><circle class="dot" cx="260" cy="70" r="5.5"></circle></g>
+            <g class="btl-node n1" transform="translate(260 70)" style="--nc:#4f8cff">
+              <circle class="nh" r="54"></circle><circle class="nc" r="46"></circle>
+              <text class="ne" y="-13">⚡</text><text class="nt" y="9">Do</text><text class="ns" y="25">run the task</text>
+            </g>
+            <g class="btl-node n2" transform="translate(440.7 201.3)" style="--nc:#8b5cf6">
+              <circle class="nh" r="54"></circle><circle class="nc" r="46"></circle>
+              <text class="ne" y="-13">📝</text><text class="nt" y="9">Document</text><text class="ns" y="25">skill.md</text>
+            </g>
+            <g class="btl-node n3" transform="translate(371.7 413.7)" style="--nc:#34d399">
+              <circle class="nh" r="54"></circle><circle class="nc" r="46"></circle>
+              <text class="ne" y="-13">✅</text><text class="nt" y="9">QA</text><text class="ns" y="25">def. of done</text>
+            </g>
+            <g class="btl-node n4" transform="translate(148.3 413.7)" style="--nc:#fbbf24">
+              <circle class="nh" r="54"></circle><circle class="nc" r="46"></circle>
+              <text class="ne" y="-13">📰</text><text class="nt" y="9">Example</text><text class="ns" y="25">meta-article</text>
+            </g>
+            <g class="btl-node n5" transform="translate(79.3 201.3)" style="--nc:#f472b6">
+              <circle class="nh" r="54"></circle><circle class="nc" r="46"></circle>
+              <text class="ne" y="-13">🔁</text><text class="nt" y="9">Improve</text><text class="ns" y="25">SOP update</text>
+            </g>
+            <g>
+              <text class="btl-center-sym" x="260" y="252">↺</text>
+              <text class="btl-center-cap" x="260" y="290">each run compounds</text>
+            </g>
+          </svg>
+          <p class="btl-loop-caption"><b>Do</b> → <b>Document</b> (skill.md) → <b>QA</b> (Definition of Done) → <b>Example</b> (Meta-Article) → <b>Improve</b> (SOP Update) → <b>↺</b></p>
+        </div>
+        <div class="btl-loop-text">
+          <div class="btl-manifesto">
+            <p><strong>Every task we perform is captured as a skill.md</strong> — a step-by-step SOP with a QA gate (the Definition of Done) and a worked example (the meta-article). The next person to run the task, human or AI agent, starts from the best documented run instead of from scratch.</p>
+            <p>Each pass through the loop sharpens the procedure, tightens the checklist, and adds proof. <strong>Nothing is ever done twice from zero. The system compounds.</strong></p>
+          </div>
+          <ul class="btl-creed">
+            <li><span class="ck">✓</span><span><b>One standard, zero drift</b> — all 239 skills follow the same definitive-article template, section for section.</span></li>
+            <li><span class="ck">✓</span><span><b>QA gate on every task</b> — a Definition of Done that a stranger (or an agent) can verify without asking.</span></li>
+            <li><span class="ck">✓</span><span><b>Example slot in every SOP</b> — each skill links the meta-article that proves the process works.</span></li>
+            <li><span class="ck">✓</span><span><b>Self-updating</b> — every run ends by improving the very document it ran from.</span></li>
+          </ul>
+          <div class="btl-prov">
+            <div class="btl-prov-head"><span>🧾</span><span>Build provenance / changelog</span></div>
+            <div class="btl-prov-entry">
+              <span class="btl-prov-v">v1.0</span><span class="btl-prov-date">2026-06-10</span>
+              <p>239 tasks documented to the definitive-article standard, generated and QA'd by parallel AI workers (slug/section/URL/status checks all passed).</p>
+              <div class="btl-prov-checks"><span>✓ slugs</span><span>✓ sections</span><span>✓ URLs</span><span>✓ statuses</span></div>
+            </div>
+            <p class="btl-prov-note">Every future run appends an entry here. The changelog <em>is</em> the proof of recursion.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. CONTROLS ============ -->
+  <div class="btl-controls" id="btl-controls">
+    <div class="btl-wrap btl-controls-in">
+      <label class="btl-search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20.5 20.5-4-4" stroke-linecap="round"></path></svg>
+        <input id="btl-q" type="search" placeholder="Search every SOP — titles, descriptions, full skill.md text…" aria-label="Search tasks by title, description, or full skill content" autocomplete="off">
+        <button id="btl-clear" type="button" aria-label="Clear search" hidden>✕</button>
+      </label>
+      <div class="btl-chips" id="btl-chips" role="group" aria-label="Filter by status"></div>
+      <div class="btl-xc">
+        <button id="btl-expand" class="btl-mini" type="button">Expand all</button>
+        <button id="btl-collapse" class="btl-mini" type="button">Collapse all</button>
+      </div>
+    </div>
+    <div class="btl-wrap"><div class="btl-resline" id="btl-resline" role="status" aria-live="polite"></div></div>
+  </div>
+
+  <!-- ============ 5. CATEGORIES ============ -->
+  <main class="btl-wrap btl-cats" id="btl-cats"></main>
+  <div class="btl-wrap"><div class="btl-empty" id="btl-empty" hidden>
+    <div class="ee">🔍</div>
+    <h3>No tasks match</h3>
+    <p>Nothing in 239 SOPs matches that combination of search and status filter.</p>
+    <button id="btl-reset" class="btl-mini" type="button">Reset search &amp; filters</button>
+  </div></div>
+
+  <!-- ============ 6. FOOTER ============ -->
+  <footer class="btl-foot">
+    <div class="btl-foot-line"></div>
+    <p class="btl-foot-main">Documented with the <strong>Local Service Spotlight Content Factory</strong> · recursive self-improvement</p>
+    <p class="btl-foot-links">
+      <a href="https://blitzmetrics.com/definitive-article-guide/" target="_blank" rel="noopener">Definitive-article guide ↗</a>
+      <span id="btl-foot-sep" hidden>·</span>
+      <a id="btl-foot-meta" href="#" target="_blank" rel="noopener" hidden>How this library built itself ↗</a>
+    </p>
+    <p class="btl-foot-tag" id="btl-foot-tag">do → document → QA → example → improve → ↺</p>
+  </footer>
+
+  <!-- ============ Modal ============ -->
+  <div class="btl-modal" id="btl-modal" role="dialog" aria-modal="true" aria-labelledby="btl-m-title" hidden>
+    <div class="btl-m-backdrop" data-close></div>
+    <div class="btl-m-panel">
+      <header class="btl-m-head">
+        <div class="btl-m-info">
+          <div class="btl-m-meta" id="btl-m-meta"></div>
+          <h3 id="btl-m-title"></h3>
+          <div class="btl-m-sub" id="btl-m-sub"></div>
+        </div>
+        <div class="btl-m-actions">
+          <button class="btl-btn-small" id="btl-m-copy" type="button">Copy skill.md</button>
+          <button class="btl-m-close" data-close aria-label="Close dialog" type="button">✕</button>
+        </div>
+      </header>
+      <div class="btl-m-body btl-md" id="btl-m-body" tabindex="0"></div>
+    </div>
+  </div>
+
+  <div class="btl-toast" id="btl-toast" role="status" aria-live="polite"></div>
+</div>
+<script>
+/* Data loader: fetch data.json, then boot the app (app.js expects window.__TASK_DATA). */
+fetch('data.json', {cache: 'no-cache'})
+  .then(function(r){ if(!r.ok) throw new Error('data.json HTTP ' + r.status); return r.json(); })
+  .then(function(d){
+    window.__TASK_DATA = d;
+    var s = document.createElement('script');
+    s.src = 'app.js';
+    document.body.appendChild(s);
+  })
+  .catch(function(e){
+    var el = document.getElementById('btl-app');
+    if (el) el.innerHTML = '<p style="padding:2rem;text-align:center">Could not load task data (' + e.message + ')</p>';
+  });
+</script>
+<script>
+/* Height reporter — fixed. Measures the app container (not scrollHeight, which
+   creates a feedback loop when the parent resizes the iframe to match). Posts
+   only on real change, debounced; no interval spam. */
+(function(){
+  var last = 0, t = null;
+  function measure(){
+    var el = document.getElementById('btl-app') || document.body;
+    var h = Math.ceil(el.getBoundingClientRect().height) + 40; /* margin allowance */
+    if (Math.abs(h - last) > 8) {
+      last = h;
+      try { parent.postMessage({btlH: h}, '*'); } catch(e){}
+    }
+  }
+  function schedule(){ clearTimeout(t); t = setTimeout(measure, 150); }
+  addEventListener('load', schedule);
+  addEventListener('resize', schedule);
+  try { new MutationObserver(schedule).observe(document.body, {subtree:true, childList:true, attributes:true}); } catch(e){}
+})();
+</script></body>
+</html>

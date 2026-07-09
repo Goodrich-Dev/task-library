@@ -1,0 +1,93 @@
+[
+ {
+  "folder": "content-factory-produce",
+  "name": "Content Factory — Produce",
+  "icon": "🎬",
+  "color": "#f59e0b",
+  "description": "Recording and capturing raw content: videos, photos, stories, presentations"
+ },
+ {
+  "folder": "content-factory-process",
+  "name": "Content Factory — Process",
+  "icon": "⚙️",
+  "color": "#f59e0b",
+  "description": "Transforming raw content into finished assets using AI tools and the Blog Posting Guidelines"
+ },
+ {
+  "folder": "content-factory-post",
+  "name": "Content Factory — Post",
+  "icon": "📤",
+  "color": "#3b82f6",
+  "description": "Publishing and distributing finished assets across platforms with proper linking"
+ },
+ {
+  "folder": "content-factory-promote",
+  "name": "Content Factory — Promote",
+  "icon": "📣",
+  "color": "#14b8a6",
+  "description": "Amplification through ads, social engagement, and Dollar a Day campaigns"
+ },
+ {
+  "folder": "digital-plumbing",
+  "name": "Digital Plumbing",
+  "icon": "🔧",
+  "color": "#8b5cf6",
+  "description": "Technical infrastructure that must be in place before any marketing can succeed"
+ },
+ {
+  "folder": "dollar-a-day",
+  "name": "Dollar a Day Campaigns",
+  "icon": "💵",
+  "color": "#10b981",
+  "description": "The Dollar a Day advertising strategy: test at $1/day, find winners, scale gradually"
+ },
+ {
+  "folder": "website-qa-audit",
+  "name": "Website QA Audit",
+  "icon": "✅",
+  "color": "#06b6d4",
+  "description": "Systematic three-layer review: Digital Plumbing, Content Architecture, Authority & Trust"
+ },
+ {
+  "folder": "seo-content-architecture",
+  "name": "SEO & Content Architecture",
+  "icon": "🌳",
+  "color": "#22c55e",
+  "description": "Building the SEO Tree, internal linking, and content hierarchy for organic authority"
+ },
+ {
+  "folder": "personal-branding",
+  "name": "Personal Branding",
+  "icon": "👤",
+  "color": "#ec4899",
+  "description": "Making expertise findable, reputation defensible, referrals scalable"
+ },
+ {
+  "folder": "strategy-measurement",
+  "name": "Strategy & Measurement",
+  "icon": "📐",
+  "color": "#6366f1",
+  "description": "Nine Triangles Framework, MAA loop, Topic Wheel, Social Amplification Engine"
+ },
+ {
+  "folder": "thank-you-machine",
+  "name": "Thank You Machine",
+  "icon": "🙏",
+  "color": "#f43f5e",
+  "description": "Turn gratitude into content, testimonials, and referrals — a compounding asset"
+ },
+ {
+  "folder": "knowledge-system-maintenance",
+  "name": "Knowledge System Maintenance",
+  "icon": "🔄",
+  "color": "#a855f7",
+  "description": "The recursive maintenance layer — auditing and improving SOPs and definitive articles"
+ },
+ {
+  "folder": "gaps-to-create",
+  "name": "Gaps & Tasks to Create",
+  "icon": "🧩",
+  "color": "#ef4444",
+  "description": "Articles and SOPs that need to be written — prioritized by impact"
+ }
+]
