@@ -1,0 +1,49 @@
+---
+name: step-17-final-formatting-and-qa-checks
+description: Run the final formatting, link, and quality pass across the live article and its distribution so the piece is verifiably done before handing off to the Promote stage.
+category: Content Factory — Post
+stage: Post
+definitive_article: /blog-posting-guidelines
+status: complete
+---
+
+# Step 17: Final formatting and QA checks
+
+**Use this when** the article is live, distributed, and the client notified — this is the closing gate of the Post stage before amplification launches.
+
+## Inputs
+- Live article URL plus its distribution URLs (YouTube, Facebook page, LinkedIn, 44K group)
+- The Blog Posting checklist (sibling skill: verify-all-items-on-blog-posting-checklist)
+- Editor access to fix anything found
+
+## Steps
+1. Open the live post on desktop **and** mobile. Check heading hierarchy, paragraph spacing, image rendering, and that no Gutenberg block broke after publish.
+2. Click-test every link: internal links (anchors and targets per the entity-linking decision tree), external links, and any CTA. Fix or remove broken ones immediately.
+3. Confirm the embedded video plays, the featured image renders in social share previews, and all images still carry alt text.
+4. Re-check RankMath after any post-publish edits — score must still be 70+, SEO title under 60 characters, meta description under 160.
+5. Verify housekeeping: author = site owner, category = correct SEO Tree branch, tags intact, permalink unchanged since indexing.
+6. Verify the distribution loop is closed: article embeds the YouTube video; YouTube description links the article; Facebook, LinkedIn, and group posts are live and logged.
+7. Run verify-all-items-on-blog-posting-checklist as the formal item-by-item gate, fix any failure at its owning step, then mark the piece **done** in the tracker and hand the post URL set to the Promote stage.
+
+## Definition of done (QA checklist)
+- [ ] Live post renders cleanly on desktop and mobile; zero broken links or blocks
+- [ ] Video plays; featured image and alt text intact; RankMath still 70+
+- [ ] Author, category, tags, and permalink verified correct
+- [ ] Distribution loop closed and logged (YouTube ↔ article, FB, LinkedIn, 44K group)
+- [ ] Full Blog Posting checklist passed; piece marked done and handed to Promote
+- [ ] Linked back to the definitive article and relevant siblings
+- [ ] Complies with Blog Posting Guidelines (if it publishes content)
+
+## Example(s)
+- Example needed — run the Meta-Article Prompt after first real run documenting a full Step 12→17 pass on one client article.
+
+## Run on a persistent agent (Fable 5)
+This closing gate is where a persistent agent (Fable 5, or comparable OpenAI/Google models) earns its keep: it re-opens the live post on desktop and mobile, click-tests every link, re-runs RankMath, verifies the distribution loop, and cycles fix → re-verify until every Definition-of-done box passes — six of seven is a failing grade, not a pass.
+Because it ran Steps 12–16 itself, memory tells it exactly what to re-check and which step owns any failure it finds.
+Each gate run is logged as a meta-article example so the library compounds.
+See `boil-the-ocean.md` for the full operating principles.
+
+## Definitive article & links
+- Hub: /blog-posting-guidelines
+- Related: /website-qa-audit (the site-wide audit this per-post QA rolls up into) · /content-factory
+- Run order (Post stage): share-in-44k-facebook-group → **step-17-final-formatting-and-qa-checks** → Promote stage (boost-top-3-5-facebook-posts)
