@@ -1,0 +1,49 @@
+name: Build & deploy Task Library
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * *'   # daily 6:00 UTC — picks up external skill repos + tracker edits
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Optional: pull the Asset Tracker's published-to-web CSV for status/owner overrides.
+      # Set TRACKER_CSV_URL as a repo variable once the Task Library tab is published.
+      - name: Fetch Asset Tracker CSV
+        if: ${{ vars.TRACKER_CSV_URL != '' }}
+        run: curl -sL "${{ vars.TRACKER_CSV_URL }}" -o tracker.csv
+
+      - name: Build data.json
+        env:
+          SKILLS_READ_TOKEN: ${{ secrets.SKILLS_READ_TOKEN }}  # only needed for private external repos
+        run: |
+          if [ -f tracker.csv ]; then
+            python3 build/build.py --tracker-csv tracker.csv
+          else
+            python3 build/build.py
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
