@@ -215,6 +215,23 @@ def download_from_source(source):
         else f'https://github.com/{owner}/{repo}/archive/{ref}.zip'
 
 
+def write_ready_zip(data, out_dir):
+    """Zip only the ready (owner-signed) skills for the header download button."""
+    import zipfile, io
+    ready = [(c, t) for c in data['categories'] for t in c['tasks']
+             if t['status'] == 'complete' and (t.get('content') or '').strip()]
+    path = os.path.join(out_dir, 'TaskLibrary-Skills-ready.zip')
+    with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
+        manifest = {'total': len(ready), 'note': 'Ready skills only — owner-signed. Rebuilt on every library build.', 'tasks': []}
+        for c, t in ready:
+            cf = folder_of(c['name'])
+            z.writestr(f'TaskLibrary-Skills-Ready/skills/{cf}/{t["slug"]}.md', t['content'])
+            manifest['tasks'].append({'slug': t['slug'], 'category': c['name'],
+                                      'owner': t.get('owner', ''), 'path': f'skills/{cf}/{t["slug"]}.md'})
+        z.writestr('TaskLibrary-Skills-Ready/manifest.json', json.dumps(manifest, ensure_ascii=False, indent=1))
+    return len(ready)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--tracker-csv')
@@ -234,8 +251,36 @@ def main():
     # is not in the registry becomes a new external skill (format claude-skill).
     valid_cats = {c['name'] for c in cats_meta}
     errors, warnings = [], []
+    sheet_only = {}   # rows with no source anywhere: rendered as named gap cards
     for slug, row in list(overrides.items()):
-        if slug in registry or not (row.get('Source Repo') or '').strip():
+        src_cell = (row.get('Source Repo') or '').strip()
+        if slug in registry and src_cell:
+            # SHEET WINS: a repo link on an existing row re-points the skill
+            # to the owner's repo; the hub copy is ignored from now on.
+            src = source_from_repo_url(src_cell, slug)
+            if src and src != registry[slug].get('source'):
+                registry[slug] = dict(registry[slug], source=src, format='claude-skill',
+                                      flag='claimed via sheet — hub copy superseded')
+                dl = (row.get('Download URL') or '').strip() or download_from_source(src)
+                if dl:
+                    registry[slug]['download'] = dl
+            continue
+        if slug in registry:
+            continue
+        if not src_cell:
+            cat = (row.get('Category') or '').strip()
+            if cat in valid_cats and slug:
+                sheet_only[slug] = {
+                    'title': (row.get('Task Title') or slug).strip() or slug,
+                    'slug': slug, 'status': 'gap',
+                    'stage': (row.get('Stage') or '—').strip() or '—',
+                    'article': (row.get('Definitive Article URL') or '').strip() or None,
+                    'desc': (row.get('Description') or '').strip(),
+                    'content': '',
+                    'flag': 'defined in sheet — not yet built',
+                    'category': cat}
+                if (row.get('Owner') or '').strip():
+                    sheet_only[slug]['owner'] = row['Owner'].strip()
             continue
         src = source_from_repo_url(row['Source Repo'], slug)
         if not src:
@@ -267,8 +312,7 @@ def main():
         if ov:
             s = (ov.get('Status') or '').strip().lower()
             status = {'ready': 'complete', 'wip': 'needs-work', 'gap': 'gap'}.get(s, status)
-            if (ov.get('Definitive Article URL') or '').strip():
-                art = ov['Definitive Article URL'].strip()
+            art = (ov.get('Definitive Article URL') or '').strip() or None  # sheet cell is authoritative
         task = {'title': fm['name'], 'slug': slug, 'status': status,
                 'stage': fm['stage'] or '—', 'article': art,
                 'desc': fm['description'], 'content': text.strip()}
@@ -283,22 +327,41 @@ def main():
             continue
         by_cat[entry['category']].append(task)
 
+    # governance: ready/wip means someone owns it; unclaimed skills are gaps
+    for slug, row in overrides.items():
+        st_ = (row.get('Status') or '').strip().lower()
+        if st_ in ('ready', 'wip') and not (row.get('Owner') or '').strip():
+            warnings.append(f'{slug}: sheet says "{st_}" but Owner is blank — unclaimed skills should be "gap"')
+    # one file, one skill: flag rows resolving to the same source file
+    seen_src = {}
+    for slug, entry in registry.items():
+        src = entry.get('source')
+        if src and src != 'local':
+            if src in seen_src:
+                warnings.append(f'{slug}: same source file as "{seen_src[src]}" ({src}) — two rows, one file')
+            seen_src[src] = slug
+    for slug, t in sheet_only.items():
+        cat = t.pop('category')
+        by_cat[cat].append(t)
     all_tasks = [t for ts in by_cat.values() for t in ts]
     data = {'stats': {'total': len(all_tasks),
                       'complete': sum(t['status'] == 'complete' for t in all_tasks),
                       'needsWork': sum(t['status'] == 'needs-work' for t in all_tasks),
                       'gaps': sum(t['status'] == 'gap' for t in all_tasks),
-                      'definitiveArticles': len({t['article'] for t in all_tasks if t['article']}),
+                      'definitiveArticles': len({t['article'] for t in all_tasks if t.get('article')}),
+                      'owners': len({t['owner'] for t in all_tasks if t.get('owner')}),
                       'categories': len(cats_meta)},
-            'bundleUrl': site['bundleUrl'], 'metaArticleUrl': site['metaArticleUrl'],
+            'bundleUrl': 'TaskLibrary-Skills-ready.zip', 'metaArticleUrl': site['metaArticleUrl'],
             'updated': site['updated'],
             'categories': [dict(c, tasks=by_cat[c['name']]) for c in cats_meta]}
 
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     json.dump(data, open(args.out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     write_library_index(data, os.path.join(os.path.dirname(args.out), 'library-index.html'))
+    nready = write_ready_zip(data, os.path.dirname(args.out))
+    print(f'ready zip: {nready} skills')
 
-    print(f"built {len(all_tasks)}/{len(registry)} skills -> {os.path.relpath(args.out, ROOT)}")
+    print(f"built {len(all_tasks)}/{len(registry) + len(sheet_only)} skills -> {os.path.relpath(args.out, ROOT)}")
     print(f"stats: {data['stats']}")
     for w in warnings:
         print('WARN ', w)

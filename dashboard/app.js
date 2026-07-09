@@ -212,15 +212,22 @@ function countUp(node, val){
 }
 const cards = [
   { k:'total',              label:'Total tasks',         cls:'c-total', icon:'🗂️' },
-  { k:'complete',           label:'Complete',            cls:'c-ok',    icon:'✅' },
-  { k:'needsWork',          label:'Needs work',          cls:'c-warn',  icon:'🛠️' },
-  { k:'gaps',               label:'Gaps',                cls:'c-bad',   icon:'⛳' },
-  { k:'definitiveArticles', label:'Definitive articles', cls:'c-art',   icon:'📰' },
+  { k:'complete',           label:'Ready',               cls:'c-ok',    icon:'✅', chip:'complete' },
+  { k:'needsWork',          label:'WIP',                 cls:'c-warn',  icon:'🛠️', chip:'needs-work' },
+  { k:'gaps',               label:'Unclaimed',           cls:'c-bad',   icon:'⛳', chip:'gap' },
+  { k:'owners',             label:'Owners',              cls:'c-art',   icon:'👤' },
   { k:'categories',         label:'Categories',          cls:'c-cat',   icon:'🧭' }
 ];
 el('#btl-statgrid').innerHTML = cards.map(function(c){
-  return '<div class="btl-stat ' + c.cls + '"><span class="ic">' + c.icon + '</span><div class="n" data-stat="' + c.k + '">0</div><div class="l">' + c.label + '</div></div>';
+  return '<div class="btl-stat ' + c.cls + '"' + (c.chip ? ' data-statchip="' + c.chip + '" role="button" tabindex="0" style="cursor:pointer"' : '') + '><span class="ic">' + c.icon + '</span><div class="n" data-stat="' + c.k + '">0</div><div class="l">' + c.label + '</div></div>';
 }).join('');
+el('#btl-statgrid').addEventListener('click', function(e){
+  const tile = e.target.closest('[data-statchip]');
+  if (!tile) return;
+  state.status = state.status === tile.getAttribute('data-statchip') ? 'all' : tile.getAttribute('data-statchip');
+  syncChips(); applyFilters();
+  const chips = el('#btl-chips'); if (chips) chips.scrollIntoView({behavior:'smooth', block:'center'});
+});
 cards.forEach(function(c){ countUp(el('[data-stat="' + c.k + '"]'), S[c.k] || 0); });
 
 (function health(){
@@ -243,9 +250,9 @@ cards.forEach(function(c){ countUp(el('[data-stat="' + c.k + '"]'), S[c.k] || 0)
    ============================================================ */
 const CHIPS = [
   { key:'all',        label:'All',        cls:'' },
-  { key:'complete',   label:'Complete',   cls:'ch-ok' },
-  { key:'needs-work', label:'Needs work', cls:'ch-warn' },
-  { key:'gap',        label:'Gaps',       cls:'ch-bad' }
+  { key:'complete',   label:'Ready',      cls:'ch-ok' },
+  { key:'needs-work', label:'WIP',        cls:'ch-warn' },
+  { key:'gap',        label:'Unclaimed',  cls:'ch-bad' }
 ];
 el('#btl-chips').innerHTML = CHIPS.map(function(c){
   return '<button type="button" class="btl-chip ' + c.cls + '" data-chip="' + c.key + '" aria-pressed="' + (c.key === 'all') + '">' +
