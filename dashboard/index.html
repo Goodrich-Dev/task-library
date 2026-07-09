@@ -562,6 +562,41 @@ fetch('data.json', {cache: 'no-cache'})
   });
 </script>
 <script>
+/* Scroll forwarding — embedded mode only. Wheel events over a cross-origin
+   iframe never scroll the parent page (browser scroll latching), and this
+   iframe is content-height so it has nothing to scroll itself. Forward any
+   wheel the app can't consume to the parent, which scrolls the page.
+   Inner scrollables (the skill modal body) still consume their own wheel. */
+(function(){
+  if (window.self === window.top) return;
+  var modal = null;
+  function scrollableAncestorCanMove(start, deltaY){
+    var n = start;
+    while (n && n !== document.documentElement){
+      if (n.scrollHeight > n.clientHeight + 1){
+        var cs = getComputedStyle(n);
+        if (/(auto|scroll)/.test(cs.overflowY)){
+          if (deltaY < 0 && n.scrollTop > 0) return true;
+          if (deltaY > 0 && n.scrollTop + n.clientHeight < n.scrollHeight - 1) return true;
+        }
+      }
+      n = n.parentElement;
+    }
+    return false;
+  }
+  addEventListener('wheel', function(e){
+    modal = modal || document.getElementById('btl-modal');
+    if (modal && !modal.hidden){
+      /* modal open: let its body consume; don't scroll the page underneath */
+      return;
+    }
+    if (!scrollableAncestorCanMove(e.target, e.deltaY)){
+      try { parent.postMessage({btlScrollBy: e.deltaY}, '*'); } catch(err){}
+    }
+  }, {passive: true});
+})();
+</script>
+<script>
 /* Height reporter — fixed. Measures the app container (not scrollHeight, which
    creates a feedback loop when the parent resizes the iframe to match). Posts
    only on real change, debounced; no interval spam. */

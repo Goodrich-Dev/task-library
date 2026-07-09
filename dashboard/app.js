@@ -431,7 +431,24 @@ function openModal(t){
     (t.download ? '<a class="btl-art" href="' + esc(t.download) + '" target="_blank" rel="noopener">Download full skill suite ⬇</a>' : '');
   mBody.innerHTML = renderMD(t.content || '*No skill.md captured yet — this task is a gap to close on the next run of the loop.*');
   prevOverflow = document.body.style.overflow;
-  document.body.style.overflow = 'hidden';
+  const embedded = window.self !== window.top;
+  if (embedded){
+    /* Inside the WP iframe the frame is content-height, so fixed+vh sizing
+       breaks: anchor the panel at the clicked row (guaranteed on-screen)
+       and cap its height to a real screen's worth. */
+    const anchorY = lastFocus ? lastFocus.getBoundingClientRect().top + window.scrollY : 0;
+    const cap = Math.min(Math.round((screen.availHeight || 900) * 0.78), 760);
+    modal.style.position = 'absolute';
+    modal.style.height = document.documentElement.scrollHeight + 'px';
+    modal.style.alignItems = 'flex-start';
+    const panel = modal.querySelector('.btl-m-panel');
+    if (panel){
+      panel.style.marginTop = Math.max(anchorY - 120, 8) + 'px';
+      panel.style.maxHeight = cap + 'px';
+    }
+  } else {
+    document.body.style.overflow = 'hidden';
+  }
   modal.hidden = false;
   mBody.scrollTop = 0;
   mClose.focus();
@@ -439,6 +456,9 @@ function openModal(t){
 function closeModal(){
   if (modal.hidden) return;
   modal.hidden = true;
+  modal.style.position = ''; modal.style.height = ''; modal.style.alignItems = '';
+  const panel = modal.querySelector('.btl-m-panel');
+  if (panel){ panel.style.marginTop = ''; panel.style.maxHeight = ''; }
   modalTask = null;
   document.body.style.overflow = prevOverflow;
   if (lastFocus && lastFocus.focus) lastFocus.focus();
