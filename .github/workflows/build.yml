@@ -20,10 +20,8 @@ jobs:
       # Optional: pull the Asset Tracker's published-to-web CSV for status/owner overrides.
       # Set TRACKER_CSV_URL as a repo variable once the Task Library tab is published.
       - name: Fetch Asset Tracker CSV
-        env:
-          TRACKER_CSV_URL: ${{ secrets.TRACKER_CSV_URL }}
-        run: |
-          if [ -n "$TRACKER_CSV_URL" ]; then curl -sL "$TRACKER_CSV_URL" -o tracker.csv; fi
+        if: ${{ vars.TRACKER_CSV_URL != '' }}
+        run: curl -sL "${{ vars.TRACKER_CSV_URL }}" -o tracker.csv
 
       - name: Build data.json
         env:
@@ -34,6 +32,9 @@ jobs:
           else
             python3 build/build.py
           fi
+
+      - name: Build pack zips
+        run: python3 build/build-packs.py
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
