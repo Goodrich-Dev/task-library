@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill Pack Builder · Task Library</title>
+<meta name="description" content="Select skills from the Task Library and download a real .zip, generated in your browser from the live data.json. No server, no upload.">
+</head>
+<body>
+<!-- ============================================================
+     Skill Pack Builder — deploys inside the Task Library's dashboard/ folder.
+     Reads the sibling data.json (same file the dashboard uses), so packs are
+     always as fresh as the last daily build. The .zip is assembled in-browser
+     by an inline, dependency-free ZIP encoder. Nothing is hosted or uploaded.
+
+     EDIT PACKS: search for "EDIT PACKS HERE" below.
+     ============================================================ -->
+<style>
+#spb-app{
+  --bg0:#070b16;--card2:#0c1326;--line:rgba(148,163,255,.12);--line2:rgba(148,163,255,.22);
+  --ink:#e9edf9;--mut:#9aa6c6;--dim:#6d7795;--blue:#4f8cff;--violet:#8b5cf6;--cyan:#22d3ee;
+  --green:#34d399;--amber:#fbbf24;--red:#f87171;--pink:#f472b6;
+  --grad:linear-gradient(120deg,#4f8cff,#8b5cf6 55%,#f472b6);--shadow:0 14px 44px rgba(2,6,23,.55);
+  --card:#101831;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  position:relative;overflow:clip;border-radius:24px;background:var(--bg0);color:var(--ink);
+  font-family:var(--font);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+#spb-app,#spb-app *,#spb-app *::before,#spb-app *::after{box-sizing:border-box;margin:0;padding:0}
+#spb-app button{font:inherit;color:inherit;background:none;cursor:pointer;border:0}
+#spb-app input{font:inherit;color:inherit}
+#spb-app :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+#spb-app .wrap{max-width:1120px;margin:0 auto;padding:0 clamp(16px,3vw,40px)}
+#spb-app .bg{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#spb-app .bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5}
+#spb-app .bg .b1{width:520px;height:520px;left:-160px;top:-160px;background:radial-gradient(circle,rgba(79,140,255,.30),transparent 65%)}
+#spb-app .bg .b2{width:560px;height:560px;right:-180px;top:80px;background:radial-gradient(circle,rgba(139,92,246,.24),transparent 65%)}
+#spb-app .z{position:relative;z-index:1}
+#spb-app header{padding:34px 0 8px}
+#spb-app .toprow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#spb-app .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);border:1px solid var(--line2);border-radius:999px;padding:6px 12px;background:rgba(16,24,49,.6)}
+#spb-app .eyebrow b{color:var(--cyan);font-weight:700}
+#spb-app .src{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:rgba(12,19,38,.6)}
+#spb-app .src .dot{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+#spb-app .src.live .dot{background:var(--green);box-shadow:0 0 10px var(--green)}
+#spb-app .src.err .dot{background:var(--red)}
+#spb-app h1{font-size:clamp(27px,4.2vw,42px);line-height:1.05;letter-spacing:-.02em;margin:16px 0 10px;font-weight:800}
+#spb-app h1 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+#spb-app .lede{color:var(--mut);max-width:72ch;font-size:clamp(15px,1.6vw,17px)}
+#spb-app .lede code{font-family:var(--mono);font-size:.9em;color:var(--cyan);background:rgba(34,211,238,.08);padding:1px 6px;border-radius:6px}
+#spb-app .how{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+#spb-app .how .chip{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mut);border:1px solid var(--line);background:rgba(12,19,38,.6);border-radius:999px;padding:7px 12px}
+#spb-app .how .chip b{color:var(--ink);font-weight:600}
+#spb-app .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:26px 0 12px}
+#spb-app .sec-h h2{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);font-weight:700}
+#spb-app .sec-h .note{font-size:12.5px;color:var(--dim)}
+#spb-app .packs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+#spb-app .pack{text-align:left;border:1px solid var(--line2);background:linear-gradient(180deg,var(--card),var(--card2));border-radius:14px;padding:14px;transition:transform .12s ease,border-color .12s ease;display:flex;flex-direction:column;gap:6px}
+#spb-app .pack:hover{transform:translateY(-2px);border-color:var(--blue)}
+#spb-app .pack .top{display:flex;align-items:center;gap:9px}
+#spb-app .pack .em{font-size:20px}
+#spb-app .pack .nm{font-weight:700;font-size:14.5px;line-height:1.2}
+#spb-app .pack .kd{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-left:auto;white-space:nowrap}
+#spb-app .pack .bl{font-size:12.5px;color:var(--mut);line-height:1.45}
+#spb-app .pack .ct{font-size:12px;color:var(--cyan);font-family:var(--mono)}
+#spb-app .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0 14px;position:sticky;top:0;z-index:5;padding:12px 0;background:linear-gradient(180deg,var(--bg0) 70%,transparent)}
+#spb-app .search{flex:1 1 260px;display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--card2);border-radius:11px;padding:9px 12px}
+#spb-app .search input{background:none;border:0;outline:0;width:100%}
+#spb-app select{border:1px solid var(--line2);background:var(--card2);border-radius:11px;padding:9px 12px;cursor:pointer}
+#spb-app .lnk{border:1px solid var(--line2);border-radius:11px;padding:9px 12px;font-size:13px;color:var(--mut)}
+#spb-app .lnk:hover{color:var(--ink);border-color:var(--blue)}
+#spb-app .list{display:flex;flex-direction:column;gap:7px;padding-bottom:120px}
+#spb-app .row{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:start;border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .12s ease,background .12s ease}
+#spb-app .row:hover{border-color:var(--line2)}
+#spb-app .row.on{border-color:var(--blue);background:linear-gradient(180deg,rgba(79,140,255,.10),var(--card2))}
+#spb-app .cb{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line2);display:grid;place-items:center;margin-top:2px;flex:0 0 auto;transition:.12s}
+#spb-app .row.on .cb{background:var(--blue);border-color:var(--blue)}
+#spb-app .cb svg{width:12px;height:12px;opacity:0}
+#spb-app .row.on .cb svg{opacity:1}
+#spb-app .row .ttl{font-weight:600;font-size:14.5px;line-height:1.3}
+#spb-app .row .meta{margin-top:3px;font-size:12px;color:var(--dim);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#spb-app .row .desc{margin-top:5px;font-size:12.5px;color:var(--mut);line-height:1.45;max-width:80ch}
+#spb-app .tag{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:999px;border:1px solid var(--line)}
+#spb-app .st-complete{color:var(--green);border-color:rgba(52,211,153,.4)}
+#spb-app .st-needs-work{color:var(--amber);border-color:rgba(251,191,36,.4)}
+#spb-app .st-gap{color:var(--red);border-color:rgba(248,113,113,.4)}
+#spb-app .kb{font-family:var(--mono);font-size:11px;color:var(--dim);white-space:nowrap;padding-top:2px}
+#spb-app .empty{text-align:center;color:var(--mut);padding:40px;border:1px dashed var(--line2);border-radius:14px}
+#spb-app #focusbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(79,140,255,.09),var(--card2));border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13.5px;color:var(--mut)}
+#spb-app #focusbar b{color:var(--ink)}
+#spb-app .tray{position:sticky;bottom:0;z-index:8;margin-top:10px}
+#spb-app .tray .inner{display:flex;flex-wrap:wrap;align-items:center;gap:12px;border:1px solid var(--line2);background:rgba(11,17,36,.94);backdrop-filter:blur(10px);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+#spb-app .tray .count{font-weight:800;font-size:18px}
+#spb-app .tray .count small{font-weight:500;color:var(--mut);font-size:13px}
+#spb-app .tray .namef{flex:1 1 200px;display:flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--card2);border-radius:11px;padding:8px 12px;min-width:180px}
+#spb-app .tray .namef input{background:none;border:0;outline:0;width:100%}
+#spb-app .tray .namef span{color:var(--dim);font-size:12px;white-space:nowrap}
+#spb-app .btn{border-radius:12px;padding:11px 16px;font-weight:700;font-size:14px;border:1px solid var(--line2)}
+#spb-app .btn.ghost{color:var(--mut)}
+#spb-app .btn.ghost:hover{color:var(--ink);border-color:var(--blue)}
+#spb-app .btn.primary{background:var(--grad);color:#fff;border:0;box-shadow:0 8px 24px rgba(79,140,255,.35)}
+#spb-app .btn.primary:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+#spb-app .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#0c1326;border:1px solid var(--line2);color:var(--ink);padding:11px 16px;border-radius:12px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:50;font-size:14px}
+#spb-app .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#spb-app footer{color:var(--dim);font-size:12.5px;padding:22px 0 30px;border-top:1px solid var(--line);margin-top:24px}
+#spb-app footer code{font-family:var(--mono);color:var(--mut)}
+#spb-app .stage{padding:56px 0;text-align:center;color:var(--mut)}
+#spb-app .stage.err{color:var(--ink)}
+#spb-app .stage code{font-family:var(--mono);color:var(--cyan)}
+@media(max-width:640px){#spb-app .row .desc{display:none}#spb-app .kb{display:none}}
+</style>
+
+<div id="spb-app">
+  <div class="bg"><i class="b1"></i><i class="b2"></i></div>
+  <div class="z wrap">
+    <header>
+      <div class="toprow">
+        <span class="eyebrow"><b>◆</b> Skill Pack Builder</span>
+        <span class="src" id="src"><span class="dot"></span><span id="srctxt">loading…</span></span>
+      </div>
+      <h1>Build a pack. <span class="g">Download a real .zip.</span></h1>
+      <p class="lede">Pick the skills you want — a curated workshop pack, a whole category, or your own mix — and the <code>.zip</code> is assembled <b>in your browser</b> on click, from the same <code>data.json</code> the library runs on. Always as fresh as the last daily build. Nothing is hosted or uploaded.</p>
+      <div class="how">
+        <span class="chip">🧠 live library — <b id="hcount">…</b> skills</span>
+        <span class="chip">⚡ zip built client-side — <b>zero hosting</b></span>
+        <span class="chip">🔗 deep-linkable: <b>?pack=&lt;id&gt;</b></span>
+      </div>
+    </header>
+
+    <div id="stage" class="stage">Loading the library…</div>
+
+    <div id="main" style="display:none">
+      <div class="sec-h"><h2>Start from a pack</h2><span class="note">Workshop packs are curated slices · category packs are whole categories</span></div>
+      <div class="packs" id="packs"></div>
+      <div class="sec-h"><h2 id="pickh">…or pick skills yourself</h2><span class="note" id="showing"></span></div>
+      <div id="focusbar" style="display:none"></div>
+      <div class="controls">
+        <label class="search">🔍 <input id="q" type="search" placeholder="Search skills by name or description…" autocomplete="off"></label>
+        <select id="fcat"></select>
+        <select id="fstatus"><option value="">All statuses</option><option value="complete">Complete</option><option value="needs-work">Needs work</option><option value="gap">Gap</option></select>
+        <button class="lnk" id="selall">Select all shown</button>
+        <button class="lnk" id="clear">Clear</button>
+      </div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <footer>Add-on to the Task Library. Reads the sibling <code>data.json</code>; the <code>.zip</code> is built by an inline, dependency-free ZIP encoder. To add a skill to any pack, register it in the Asset Tracker's Task Library sheet — it appears here after the next daily build. Edit pack definitions in this file's <code>PACKS</code> array.</footer>
+  </div>
+
+  <div class="wrap z"><div class="tray" id="tray" style="display:none"><div class="inner">
+    <div class="count"><span id="cnt">0</span> <small>skills · <span id="kb">0 KB</span></small></div>
+    <label class="namef"><span>pack&nbsp;name</span><input id="pname" value="custom-pack" spellcheck="false"></label>
+    <button class="btn ghost" id="copyman">Copy manifest</button>
+    <button class="btn primary" id="dl" disabled>⬇ Download .zip</button>
+  </div></div></div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>/* Minimal, dependency-free ZIP writer (STORE method, no compression).
+   Produces a valid .zip Uint8Array from [{name, data:Uint8Array}].
+   Works in browser and Node. Good enough for text skill.md bundles. */
+(function (root) {
+  // ---- CRC32 ----
+  var CRC_TABLE = (function () {
+    var t = new Uint32Array(256);
+    for (var n = 0; n < 256; n++) {
+      var c = n;
+      for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[n] = c >>> 0;
+    }
+    return t;
+  })();
+  function crc32(bytes) {
+    var c = 0xFFFFFFFF;
+    for (var i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+  function strToBytes(str) {
+    // UTF-8 encode
+    if (typeof TextEncoder !== 'undefined') return new TextEncoder().encode(str);
+    var utf8 = unescape(encodeURIComponent(str)), arr = new Uint8Array(utf8.length);
+    for (var i = 0; i < utf8.length; i++) arr[i] = utf8.charCodeAt(i);
+    return arr;
+  }
+  function pushU16(arr, v) { arr.push(v & 0xFF, (v >>> 8) & 0xFF); }
+  function pushU32(arr, v) { arr.push(v & 0xFF, (v >>> 8) & 0xFF, (v >>> 16) & 0xFF, (v >>> 24) & 0xFF); }
+
+  // files: [{name:string, data:string|Uint8Array}]
+  function makeZip(files) {
+    var localParts = [];      // array of Uint8Array chunks (file records)
+    var central = [];         // byte array for central directory
+    var offset = 0;           // running offset of local headers
+
+    var localBytes = [];      // flat byte array we build then convert
+
+    files.forEach(function (f) {
+      var nameBytes = strToBytes(f.name);
+      var dataBytes = (typeof f.data === 'string') ? strToBytes(f.data) : f.data;
+      var crc = crc32(dataBytes);
+      var size = dataBytes.length;
+
+      var localHeaderStart = localBytes.length;
+      // Local file header
+      pushU32(localBytes, 0x04034b50);   // signature
+      pushU16(localBytes, 20);           // version needed
+      pushU16(localBytes, 0x0800);       // flags: bit 11 = UTF-8 filenames
+      pushU16(localBytes, 0);            // method: 0 = store
+      pushU16(localBytes, 0);            // mod time
+      pushU16(localBytes, 0x21);         // mod date (arbitrary fixed)
+      pushU32(localBytes, crc);
+      pushU32(localBytes, size);         // compressed size
+      pushU32(localBytes, size);         // uncompressed size
+      pushU16(localBytes, nameBytes.length);
+      pushU16(localBytes, 0);            // extra len
+      for (var i = 0; i < nameBytes.length; i++) localBytes.push(nameBytes[i]);
+      for (var j = 0; j < dataBytes.length; j++) localBytes.push(dataBytes[j]);
+
+      // Central directory record
+      pushU32(central, 0x02014b50);
+      pushU16(central, 20);              // version made by
+      pushU16(central, 20);              // version needed
+      pushU16(central, 0x0800);          // flags
+      pushU16(central, 0);               // method
+      pushU16(central, 0);               // time
+      pushU16(central, 0x21);            // date
+      pushU32(central, crc);
+      pushU32(central, size);
+      pushU32(central, size);
+      pushU16(central, nameBytes.length);
+      pushU16(central, 0);               // extra len
+      pushU16(central, 0);               // comment len
+      pushU16(central, 0);               // disk number
+      pushU16(central, 0);               // internal attrs
+      pushU32(central, 0);               // external attrs
+      pushU32(central, localHeaderStart);// offset of local header
+      for (var k = 0; k < nameBytes.length; k++) central.push(nameBytes[k]);
+    });
+
+    var centralStart = localBytes.length;
+    for (var a = 0; a < central.length; a++) localBytes.push(central[a]);
+
+    // End of central directory
+    var eocd = [];
+    pushU32(eocd, 0x06054b50);
+    pushU16(eocd, 0);                    // disk
+    pushU16(eocd, 0);                    // disk with cd
+    pushU16(eocd, files.length);         // entries this disk
+    pushU16(eocd, files.length);         // total entries
+    pushU32(eocd, central.length);       // size of central dir
+    pushU32(eocd, centralStart);         // offset of central dir
+    pushU16(eocd, 0);                    // comment len
+    for (var b = 0; b < eocd.length; b++) localBytes.push(eocd[b]);
+
+    return new Uint8Array(localBytes);
+  }
+
+  root.makeZip = makeZip;
+  if (typeof module !== 'undefined' && module.exports) module.exports = { makeZip: makeZip, crc32: crc32 };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+(function(){
+  // ============ EDIT PACKS HERE ============
+  // A pack = { id, name, kind, emoji, blurb, slugs:[...] }.
+  // slugs are Task Library slugs; any slug not yet in the library is skipped
+  // and shown as "N not yet in library" on the card. Add a skill to the sheet
+  // (Owner + Source Repo + Status) and it becomes selectable after the next build.
+  var PACKS = [{"id": "wichita-google-ads", "name": "Wichita — Google Ads Workshop", "kind": "workshop", "emoji": "🌾", "blurb": "Paid-ads + measurement bundle for a local-service Google Ads workshop. Anchored on google-ads-analyzer.", "slugs": ["google-ads-analyzer", "stage-1-plumbing-fb-ads-google-ads-analytics", "stage-2-goals-mission-90-day-goals-cpa-roas-budget", "maa-cycle-metrics-analysis-action", "submit-weekly-maa-report-every-friday", "set-up-ga4-with-internal-traffic-filtering", "set-up-call-tracking-for-phone-conversions", "install-google-tag-manager-container", "analyze-cost-per-result-and-engagement", "kill-underperformers-scale-winners"]}, {"id": "dealcon", "name": "DealCon — Personal Brand", "kind": "workshop", "emoji": "🤝", "blurb": "The personal-brand / authority set for a deal-making audience — the live-slug version of the dealcon-10 pack.", "slugs": ["gct-goals-content-targeting", "build-personal-brand-website", "add-consistent-headshots-and-bios-across-profiles", "build-third-party-validation", "claim-and-verify-knowledge-panel-when-it-appears", "implement-person-schema-with-sameas-links", "get-featured-on-podcasts", "create-collaborative-content-with-industry-peers", "boost-one-minute-videos-for-personal-branding", "learn-do-teach-apprentice-model"]}, {"id": "website-qa", "name": "Website QA Audit", "kind": "category", "emoji": "🔍", "blurb": "The full website QA audit category — real, ship-ready.", "slugs": ["audit-internal-links-between-all-blog-posts", "check-all-cta-buttons-lead-to-correct-destinations", "check-each-homepage-section-includes-relevant-image", "check-favicon-is-set", "check-for-broken-links", "check-lead-magnet-section-has-visual-mockup", "check-meta-description-under-160-chars", "check-schema-connects-to-all-verified-profiles", "check-seo-title-under-60-chars-with-focus-keyword", "check-social-profiles-linked-and-prominent", "ensure-no-stock-images-used", "ensure-no-text-only-sections-spanning-full-viewport", "ensure-robots-meta-not-blocking-indexing--qa-audit", "test-mobile-load-time-under-3-seconds", "verify-achievements-are-evidenced-not-just-claimed", "verify-all-images-have-descriptive-alt-text", "verify-all-pages-written-in-first-person", "verify-at-least-one-video-embed-on-homepage", "verify-email-opt-in-form-exists-and-works", "verify-entity-linking-follows-decision-tree", "verify-featured-images-unique-per-blog-post", "verify-footer-includes-social-links-and-secondary-nav", "verify-ga4-configured-with-internal-traffic-filtered", "verify-google-business-profile-is-verified", "verify-gtm-installed-and-firing-on-every-page", "verify-hero-section-contains-real-photo-of-person", "verify-https-with-no-mixed-content", "verify-meta-pixel-installed-with-lead-events", "verify-minimum-5-distinct-images-on-homepage", "verify-person-schema-with-sameas-links", "verify-rank-math-score-above-70-on-every-page", "verify-social-proof-photos-present", "verify-testimonials-include-headshots-with-attribution", "verify-testimonials-with-full-attribution", "verify-wordpress-author-set-to-site-owner-name", "verify-xml-sitemap-exists-and-in-robotstxt"]}, {"id": "digital-plumbing", "name": "Digital Plumbing", "kind": "category", "emoji": "🔧", "blurb": "The foundational setup category (tracking, DNS, GBP, schema).", "slugs": ["add-click-to-call-links-for-mobile", "add-schema-markup-person-localbusiness", "claim-and-brand-facebook-page", "configure-https-with-no-mixed-content", "configure-spf-dkim-dmarc-for-deliverability", "convert-instagram-to-professional-account", "create-clear-conversion-path", "create-linkedin-page-matching-business-entity", "create-xml-sitemap-and-reference-in-robots-txt", "ensure-nap-consistency-across-platforms", "ensure-proper-dns-records", "ensure-robots-meta-not-blocking-indexing", "ensure-site-loads-under-3-seconds-on-mobile", "ensure-working-contact-form-delivers-notifications", "install-google-tag-manager-container", "install-meta-pixel-with-standard-events", "set-correct-business-categories", "set-favicon", "set-up-call-tracking-for-phone-conversions", "set-up-consistent-headshots-and-bios-across-profiles", "set-up-ga4-with-internal-traffic-filtering", "set-up-professional-email-on-domain", "set-up-youtube-channel-with-proper-branding", "upload-real-photos-and-set-business-hours", "verify-domain-ownership-and-registrar-access", "verify-google-business-profile", "verify-google-search-console-and-connect-to-ga4", "write-proper-title-tags-and-meta-descriptions"]}, {"id": "dollar-a-day", "name": "Dollar-a-Day Campaigns", "kind": "category", "emoji": "💵", "blurb": "Every Dollar-a-Day campaign skill.", "slugs": ["analyze-cost-per-result-and-engagement", "boost-one-minute-videos-for-personal-branding", "build-audience-layers", "create-facebook-instagram-campaigns-with-location-targeting", "create-youtube-campaigns-using-aducate-model", "execute-switch-boosts-to-new-audiences", "identify-signals-worth-amplifying", "kill-underperforming-ads", "run-multiple-simultaneous-tests", "run-twitter-x-promotion-for-thought-leader-threads", "scale-winners-by-increasing-budget-gradually", "sequence-content-from-awareness-to-conversion", "set-1-day-budget-per-ad-set", "set-up-digital-plumbing-pixels-tracking", "set-up-meta-business-manager-and-public-figure-pages", "set-up-tiktok-campaigns", "use-dollar-a-day-to-influence-media-coverage", "verify-prerequisites-product-customers-content", "dollar-a-day-strategist"]}];
+  var DATA_URL = 'data.json';   // sibling of this file in dashboard/
+  // =========================================
+
+  var $=function(id){return document.getElementById(id);};
+  var DATA=null,SK=[],BYSLUG={},selected=new Set(),focus=null;
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+  function normalize(raw){
+    var cats=(raw.categories||[]).map(function(c){return {folder:c.folder,name:c.name,icon:c.icon||'',color:c.color||'#4f8cff'};});
+    var skills=[];
+    (raw.categories||[]).forEach(function(c){(c.tasks||[]).forEach(function(t){
+      skills.push({slug:t.slug,title:t.title||t.slug,desc:t.desc||'',cat:c.folder,catName:c.name,status:t.status||'needs-work',stage:t.stage||'',content:t.content||''});
+    });});
+    return {updated:raw.updated||'',stats:raw.stats||{},skills:skills,cats:cats};
+  }
+  function boot(){
+    fetch(DATA_URL,{cache:'no-cache'})
+      .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+      .then(function(raw){
+        DATA=normalize(raw);SK=DATA.skills;BYSLUG={};SK.forEach(function(s){BYSLUG[s.slug]=s;});
+        var b=$('src');b.className='src live';
+        $('srctxt').textContent='live · '+SK.length+' skills · '+(DATA.updated||'');
+        $('hcount').textContent=SK.length;buildUI();
+      })
+      .catch(function(e){
+        $('src').className='src err';$('srctxt').textContent='data.json not reachable';
+        $('stage').className='stage err';
+        $('stage').innerHTML='Couldn’t load <code>data.json</code> ('+esc(String(e.message||e))+').<br>This page reads the <code>data.json</code> next to it — open it from the deployed dashboard (same folder), not straight from disk.';
+      });
+  }
+  function buildUI(){
+    $('stage').style.display='none';$('main').style.display='';$('tray').style.display='';
+    var fcat=$('fcat');
+    fcat.innerHTML='<option value="">All categories ('+SK.length+')</option>'+DATA.cats.map(function(c){
+      var n=SK.filter(function(s){return s.cat===c.folder;}).length;
+      return '<option value="'+c.folder+'">'+esc(c.icon+' '+c.name)+' ('+n+')</option>';}).join('');
+    var packs=PACKS.map(function(p){var live=(p.slugs||[]).filter(function(s){return BYSLUG[s];});
+      return {id:p.id,name:p.name,kind:p.kind,emoji:p.emoji,blurb:p.blurb,slugs:live,asked:(p.slugs||[]).length};});
+    $('packs').innerHTML=packs.map(function(p){var miss=p.asked-p.slugs.length;
+      return '<button class="pack" data-pack="'+esc(p.id)+'"><div class="top"><span class="em">'+esc(p.emoji)+'</span><span class="nm">'+esc(p.name)+'</span><span class="kd">'+esc(p.kind)+'</span></div><div class="bl">'+esc(p.blurb)+'</div><div class="ct">'+p.slugs.length+' skills'+(miss>0?(' · '+miss+' not yet in library'):'')+' →</div></button>';}).join('');
+    $('packs').addEventListener('click',function(e){var b=e.target.closest('[data-pack]');if(b)applyPack(b.getAttribute('data-pack'),packs,true);});
+    $('q').addEventListener('input',render);fcat.addEventListener('change',render);$('fstatus').addEventListener('change',render);
+    $('selall').addEventListener('click',function(){currentFiltered().forEach(function(s){selected.add(s.slug);});render();});
+    $('clear').addEventListener('click',function(){selected.clear();render();});
+    $('list').addEventListener('click',function(e){var r=e.target.closest('[data-slug]');if(!r)return;var slug=r.getAttribute('data-slug');if(selected.has(slug))selected.delete(slug);else selected.add(slug);r.classList.toggle('on',selected.has(slug));updateTray();});
+    $('copyman').addEventListener('click',copyManifest);$('dl').addEventListener('click',download);
+    render();
+    var m=(location.search||'').match(/[?&]pack=([a-z0-9\-_]+)/i);if(m)applyPack(m[1].toLowerCase(),packs,true);
+  }
+  function applyPack(id,packs,doFocus){var p=packs.filter(function(x){return x.id===id;})[0];if(!p)return;selected=new Set(p.slugs);$('pname').value=id;$('q').value='';$('fcat').value='';$('fstatus').value='';focus=doFocus?{id:id,name:p.name,slugs:p.slugs.slice()}:null;updateFocus();render();toast('Loaded "'+p.name+'" — '+p.slugs.length+' skills selected');}
+  function updateFocus(){var bar=$('focusbar');if(focus){bar.style.display='';bar.innerHTML='<span>📦 <b>'+esc(focus.name)+'</b> · showing only this pack ('+focus.slugs.length+' skills)</span>';var btn=document.createElement('button');btn.className='lnk';btn.textContent='Browse all '+SK.length+' skills →';btn.addEventListener('click',function(){focus=null;updateFocus();render();});bar.appendChild(btn);$('pickh').textContent='Your pack';}else{bar.style.display='none';bar.innerHTML='';$('pickh').textContent='…or pick skills yourself';}}
+  function currentFiltered(){var q=$('q').value.trim().toLowerCase(),cat=$('fcat').value,st=$('fstatus').value;var fset=focus?new Set(focus.slugs):null;return SK.filter(function(s){if(fset&&!fset.has(s.slug))return false;if(cat&&s.cat!==cat)return false;if(st&&s.status!==st)return false;if(q){var hay=(s.title+' '+s.desc+' '+s.slug).toLowerCase();if(hay.indexOf(q)<0)return false;}return true;});}
+  var CHK='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>';
+  function render(){var rows=currentFiltered();$('showing').textContent=focus?(rows.length+' shown in this pack'):(rows.length+' of '+SK.length+' shown');
+    $('list').innerHTML=rows.length?rows.map(function(s){var on=selected.has(s.slug),kb=Math.max(1,Math.round(s.content.length/1024)),stName=s.status.replace('-',' ');
+      return '<div class="row'+(on?' on':'')+'" data-slug="'+esc(s.slug)+'"><div class="cb">'+CHK+'</div><div><div class="ttl">'+esc(s.title)+'</div><div class="meta"><span class="tag st-'+s.status+'">'+esc(stName)+'</span><span>'+esc(s.catName)+'</span>'+(s.stage?'<span>· '+esc(s.stage)+'</span>':'')+'</div><div class="desc">'+esc(s.desc)+'</div></div><div class="kb">'+kb+' KB</div></div>';}).join(''):'<div class="empty">No skills match that search + filter.</div>';
+    updateTray();}
+  function updateTray(){$('cnt').textContent=selected.size;var bytes=0;selected.forEach(function(sl){if(BYSLUG[sl])bytes+=BYSLUG[sl].content.length;});$('kb').textContent=(bytes>1048576?(bytes/1048576).toFixed(1)+' MB':Math.round(bytes/1024)+' KB');$('dl').disabled=selected.size===0;}
+  function manifest(){var name=($('pname').value||'custom-pack').trim();var slugs=SK.filter(function(s){return selected.has(s.slug);}).map(function(s){return s.slug;});return {pack:name,generated_by:'Skill Pack Builder',source:$('srctxt').textContent,skill_count:slugs.length,skills:slugs};}
+  function copyManifest(){var txt=JSON.stringify(manifest(),null,2);(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast('Manifest copied ('+selected.size+' slugs)');}).catch(function(){toast('Copy failed — see console');console.log(txt);});}
+  function download(){if(!selected.size)return;var name=($('pname').value||'custom-pack').trim().replace(/[^a-z0-9\-_]+/gi,'-');var chosen=SK.filter(function(s){return selected.has(s.slug);});var files=[];var readme='# '+name+'\n\n'+chosen.length+' skills from the Local Service Spotlight Task Library.\n\nGenerated in-browser by the Skill Pack Builder. Source: '+$('srctxt').textContent+'\n\n## Skills\n\n'+chosen.map(function(s){return '- **'+s.title+'** (`'+s.slug+'`) — '+s.status;}).join('\n')+'\n';files.push({name:name+'/README.md',data:readme});files.push({name:name+'/MANIFEST.json',data:JSON.stringify(manifest(),null,2)});chosen.forEach(function(s){files.push({name:name+'/skills/'+s.slug+'/skill.md',data:s.content});});var bytes=window.makeZip(files);var blob=new Blob([bytes],{type:'application/zip'});var url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name+'-skills.zip';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);toast('Built '+name+'-skills.zip · '+chosen.length+' skills · '+Math.round(bytes.length/1024)+' KB');}
+  var tT;function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(function(){t.classList.remove('show');},2600);}
+  boot();
+})();
+</script>
+</body>
+</html>
