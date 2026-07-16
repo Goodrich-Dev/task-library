@@ -1,0 +1,46 @@
+{
+  "_comment": "Single source of truth for skill packs. The pack-builder reads these; build-packs.py emits one zip per pack into dashboard/packs/. A pack lists explicit `slugs` and/or a `category` folder that expands to every skill in it. A slug not yet in the library is skipped (logged), never an error.",
+  "packs": [
+    {
+      "id": "wichita-google-ads",
+      "name": "Wichita — Google Ads Workshop",
+      "kind": "workshop",
+      "emoji": "🌾",
+      "blurb": "Paid-ads + measurement bundle for a local-service Google Ads workshop. Anchored on google-ads-analyzer.",
+      "slugs": [
+        "google-ads-analyzer",
+        "stage-1-plumbing-fb-ads-google-ads-analytics",
+        "stage-2-goals-mission-90-day-goals-cpa-roas-budget",
+        "maa-cycle-metrics-analysis-action",
+        "submit-weekly-maa-report-every-friday",
+        "set-up-ga4-with-internal-traffic-filtering",
+        "set-up-call-tracking-for-phone-conversions",
+        "install-google-tag-manager-container",
+        "analyze-cost-per-result-and-engagement",
+        "kill-underperformers-scale-winners"
+      ]
+    },
+    {
+      "id": "dealcon",
+      "name": "DealCon — Personal Brand",
+      "kind": "workshop",
+      "emoji": "🤝",
+      "blurb": "The personal-brand / authority set for a deal-making audience — the live-slug version of the dealcon-10 pack.",
+      "slugs": [
+        "gct-goals-content-targeting",
+        "build-personal-brand-website",
+        "add-consistent-headshots-and-bios-across-profiles",
+        "build-third-party-validation",
+        "claim-and-verify-knowledge-panel-when-it-appears",
+        "implement-person-schema-with-sameas-links",
+        "get-featured-on-podcasts",
+        "create-collaborative-content-with-industry-peers",
+        "boost-one-minute-videos-for-personal-branding",
+        "learn-do-teach-apprentice-model"
+      ]
+    },
+    { "id": "website-qa", "name": "Website QA Audit", "kind": "category", "emoji": "🔍", "blurb": "The full website QA audit category — real, ship-ready.", "category": "website-qa-audit" },
+    { "id": "digital-plumbing", "name": "Digital Plumbing", "kind": "category", "emoji": "🔧", "blurb": "The foundational setup category (tracking, DNS, GBP, schema).", "category": "digital-plumbing" },
+    { "id": "dollar-a-day", "name": "Dollar-a-Day Campaigns", "kind": "category", "emoji": "💵", "blurb": "Every Dollar-a-Day campaign skill.", "category": "dollar-a-day" }
+  ]
+}
