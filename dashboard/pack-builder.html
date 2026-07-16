@@ -87,6 +87,8 @@
 #spb-app .st-gap{color:var(--red);border-color:rgba(248,113,113,.4)}
 #spb-app .kb{font-family:var(--mono);font-size:11px;color:var(--dim);white-space:nowrap;padding-top:2px}
 #spb-app .empty{text-align:center;color:var(--mut);padding:40px;border:1px dashed var(--line2);border-radius:14px}
+#spb-app #focusbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;border:1px solid var(--line2);background:linear-gradient(180deg,rgba(79,140,255,.09),var(--card2));border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:13.5px;color:var(--mut)}
+#spb-app #focusbar b{color:var(--ink)}
 #spb-app .tray{position:sticky;bottom:0;z-index:8;margin-top:10px}
 #spb-app .tray .inner{display:flex;flex-wrap:wrap;align-items:center;gap:12px;border:1px solid var(--line2);background:rgba(11,17,36,.94);backdrop-filter:blur(10px);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
 #spb-app .tray .count{font-weight:800;font-size:18px}
@@ -131,7 +133,8 @@
     <div id="main" style="display:none">
       <div class="sec-h"><h2>Start from a pack</h2><span class="note">Workshop packs are curated slices · category packs are whole categories</span></div>
       <div class="packs" id="packs"></div>
-      <div class="sec-h"><h2>…or pick skills yourself</h2><span class="note" id="showing"></span></div>
+      <div class="sec-h"><h2 id="pickh">…or pick skills yourself</h2><span class="note" id="showing"></span></div>
+      <div id="focusbar" style="display:none"></div>
       <div class="controls">
         <label class="search">🔍 <input id="q" type="search" placeholder="Search skills by name or description…" autocomplete="off"></label>
         <select id="fcat"></select>
@@ -269,7 +272,7 @@
   // =========================================
 
   var $=function(id){return document.getElementById(id);};
-  var DATA=null,SK=[],BYSLUG={},selected=new Set();
+  var DATA=null,SK=[],BYSLUG={},selected=new Set(),focus=null;
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
   function normalize(raw){
@@ -305,19 +308,20 @@
       return {id:p.id,name:p.name,kind:p.kind,emoji:p.emoji,blurb:p.blurb,slugs:live,asked:(p.slugs||[]).length};});
     $('packs').innerHTML=packs.map(function(p){var miss=p.asked-p.slugs.length;
       return '<button class="pack" data-pack="'+esc(p.id)+'"><div class="top"><span class="em">'+esc(p.emoji)+'</span><span class="nm">'+esc(p.name)+'</span><span class="kd">'+esc(p.kind)+'</span></div><div class="bl">'+esc(p.blurb)+'</div><div class="ct">'+p.slugs.length+' skills'+(miss>0?(' · '+miss+' not yet in library'):'')+' →</div></button>';}).join('');
-    $('packs').addEventListener('click',function(e){var b=e.target.closest('[data-pack]');if(b)applyPack(b.getAttribute('data-pack'),packs);});
+    $('packs').addEventListener('click',function(e){var b=e.target.closest('[data-pack]');if(b)applyPack(b.getAttribute('data-pack'),packs,true);});
     $('q').addEventListener('input',render);fcat.addEventListener('change',render);$('fstatus').addEventListener('change',render);
     $('selall').addEventListener('click',function(){currentFiltered().forEach(function(s){selected.add(s.slug);});render();});
     $('clear').addEventListener('click',function(){selected.clear();render();});
     $('list').addEventListener('click',function(e){var r=e.target.closest('[data-slug]');if(!r)return;var slug=r.getAttribute('data-slug');if(selected.has(slug))selected.delete(slug);else selected.add(slug);r.classList.toggle('on',selected.has(slug));updateTray();});
     $('copyman').addEventListener('click',copyManifest);$('dl').addEventListener('click',download);
     render();
-    var m=(location.search||'').match(/[?&]pack=([a-z0-9\-_]+)/i);if(m)applyPack(m[1].toLowerCase(),packs);
+    var m=(location.search||'').match(/[?&]pack=([a-z0-9\-_]+)/i);if(m)applyPack(m[1].toLowerCase(),packs,true);
   }
-  function applyPack(id,packs){var p=packs.filter(function(x){return x.id===id;})[0];if(!p)return;selected=new Set(p.slugs);$('pname').value=id;$('q').value='';$('fcat').value='';$('fstatus').value='';render();toast('Loaded "'+p.name+'" — '+p.slugs.length+' skills selected');}
-  function currentFiltered(){var q=$('q').value.trim().toLowerCase(),cat=$('fcat').value,st=$('fstatus').value;return SK.filter(function(s){if(cat&&s.cat!==cat)return false;if(st&&s.status!==st)return false;if(q){var hay=(s.title+' '+s.desc+' '+s.slug).toLowerCase();if(hay.indexOf(q)<0)return false;}return true;});}
+  function applyPack(id,packs,doFocus){var p=packs.filter(function(x){return x.id===id;})[0];if(!p)return;selected=new Set(p.slugs);$('pname').value=id;$('q').value='';$('fcat').value='';$('fstatus').value='';focus=doFocus?{id:id,name:p.name,slugs:p.slugs.slice()}:null;updateFocus();render();toast('Loaded "'+p.name+'" — '+p.slugs.length+' skills selected');}
+  function updateFocus(){var bar=$('focusbar');if(focus){bar.style.display='';bar.innerHTML='<span>📦 <b>'+esc(focus.name)+'</b> · showing only this pack ('+focus.slugs.length+' skills)</span>';var btn=document.createElement('button');btn.className='lnk';btn.textContent='Browse all '+SK.length+' skills →';btn.addEventListener('click',function(){focus=null;updateFocus();render();});bar.appendChild(btn);$('pickh').textContent='Your pack';}else{bar.style.display='none';bar.innerHTML='';$('pickh').textContent='…or pick skills yourself';}}
+  function currentFiltered(){var q=$('q').value.trim().toLowerCase(),cat=$('fcat').value,st=$('fstatus').value;var fset=focus?new Set(focus.slugs):null;return SK.filter(function(s){if(fset&&!fset.has(s.slug))return false;if(cat&&s.cat!==cat)return false;if(st&&s.status!==st)return false;if(q){var hay=(s.title+' '+s.desc+' '+s.slug).toLowerCase();if(hay.indexOf(q)<0)return false;}return true;});}
   var CHK='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>';
-  function render(){var rows=currentFiltered();$('showing').textContent=rows.length+' of '+SK.length+' shown';
+  function render(){var rows=currentFiltered();$('showing').textContent=focus?(rows.length+' shown in this pack'):(rows.length+' of '+SK.length+' shown');
     $('list').innerHTML=rows.length?rows.map(function(s){var on=selected.has(s.slug),kb=Math.max(1,Math.round(s.content.length/1024)),stName=s.status.replace('-',' ');
       return '<div class="row'+(on?' on':'')+'" data-slug="'+esc(s.slug)+'"><div class="cb">'+CHK+'</div><div><div class="ttl">'+esc(s.title)+'</div><div class="meta"><span class="tag st-'+s.status+'">'+esc(stName)+'</span><span>'+esc(s.catName)+'</span>'+(s.stage?'<span>· '+esc(s.stage)+'</span>':'')+'</div><div class="desc">'+esc(s.desc)+'</div></div><div class="kb">'+kb+' KB</div></div>';}).join(''):'<div class="empty">No skills match that search + filter.</div>';
     updateTray();}
